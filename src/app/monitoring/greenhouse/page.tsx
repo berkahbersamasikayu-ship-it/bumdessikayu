@@ -69,24 +69,24 @@ export default function MonitoringGreenhousePage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-black">Monitoring Greenhouse</h1>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex w-full md:w-auto items-center gap-3">
+          <div className="relative w-full md:w-auto">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari catatan tindakan..."
-              className="h-10 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="h-11 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-900"
             />
           </div>
 
           <button
             onClick={() => setShowModal(true)}
-            className="px-6 py-2.5 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800"
+            className="h-11 px-6 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors shrink-0"
           >
             Tambah Data
           </button>
@@ -94,35 +94,35 @@ export default function MonitoringGreenhousePage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 overflow-x-auto">
-        <table className="w-full text-left text-sm">
+        <table className="w-full text-left border-collapse border border-gray-200">
           <thead>
-            <tr className="text-gray-700 border-b border-gray-200">
-              <th className="py-3 pr-3 font-semibold">Minggu/Tanggal</th>
-              <th className="py-3 pr-3 font-semibold">Kondisi GH</th>
-              <th className="py-3 pr-3 font-semibold">Irigasi Tetes</th>
-              <th className="py-3 pr-3 font-semibold">Kondisi Tanaman</th>
-              <th className="py-3 pr-3 font-semibold">Hama/Penyakit</th>
-              <th className="py-3 pr-3 font-semibold">Pemupukan</th>
-              <th className="py-3 pr-3 font-semibold">Pembungaan/Pembuahan</th>
-              <th className="py-3 pr-3 font-semibold">Tindakan yang Dilakukan</th>
+            <tr className="bg-green-700 text-white">
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Minggu/Tanggal</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Kondisi GH</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Irigasi Tetes</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Kondisi Tanaman</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Hama/Penyakit</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Pemupukan</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Pembungaan/Pembuahan</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Tindakan yang Dilakukan</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {isLoading ? (
-              <tr><td colSpan={8} className="py-8 text-center text-gray-400">Memuat data...</td></tr>
+              <tr><td colSpan={8} className="p-6 text-center text-gray-500 border border-gray-200 text-base">Memuat data...</td></tr>
             ) : data.length === 0 ? (
-              <tr><td colSpan={8} className="py-8 text-center text-gray-400 italic">Belum ada data yang cocok.</td></tr>
+              <tr><td colSpan={8} className="p-6 text-center text-gray-500 italic border border-gray-200 text-base">Belum ada data yang cocok.</td></tr>
             ) : (
               data.map((row) => (
-                <tr key={row.id}>
-                  <td className="py-3 pr-3 text-gray-700">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
-                  <td className="py-3 pr-3 text-gray-700">{labelMap[row.kondisi_gh]}</td>
-                  <td className="py-3 pr-3 text-gray-700">{labelMap[row.irigasi_tetes]}</td>
-                  <td className="py-3 pr-3 text-gray-700">{labelMap[row.kondisi_tanaman]}</td>
-                  <td className="py-3 pr-3 text-gray-700">{labelMap[row.hama_penyakit]}</td>
-                  <td className="py-3 pr-3 text-gray-700">{labelMap[row.pemupukan]}</td>
-                  <td className="py-3 pr-3 text-gray-700">{labelMap[row.pembungaan_pembuahan]}</td>
-                  <td className="py-3 pr-3 text-gray-700">{row.tindakan || '-'}</td>
+                <tr key={row.id} className="odd:bg-white even:bg-gray-50 text-gray-800 hover:bg-green-50 transition-colors">
+                  <td className="p-3 border border-gray-200 text-base font-medium">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.kondisi_gh]}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.irigasi_tetes]}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.kondisi_tanaman]}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.hama_penyakit]}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.pemupukan]}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.pembungaan_pembuahan]}</td>
+                  <td className="p-3 border border-gray-200 text-base">{row.tindakan || '-'}</td>
                 </tr>
               ))
             )}
