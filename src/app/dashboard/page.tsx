@@ -219,7 +219,7 @@ function MetricCard({
     >
       {/* pr-12 untuk jaga jarak, whitespace-nowrap agar pantang turun baris */}
       <div className="pr-12">
-        <h3 className={`text-black font-semibold truncate ${compact ? 'text-sm' : 'text-sm xl:text-base'}`}>
+        <h3 className={`text-black font-semibold ${compact ? 'text-sm' : 'text-sm xl:text-base'}`}>
           {label}
         </h3>
         <span className={`font-bold text-black leading-none block mt-2 tracking-tight whitespace-nowrap ${compact ? 'text-lg' : 'text-xl'}`}>
