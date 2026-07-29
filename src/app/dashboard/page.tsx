@@ -213,20 +213,23 @@ function MetricCard({
 }) {
   return (
     <div
-      className={`bg-white rounded-2xl shadow-sm border-l-8 ${borderColor} border-t border-r border-b border-gray-100 p-5 relative flex flex-col justify-between overflow-hidden ${
-        compact ? 'h-24' : 'h-36'
+      className={`bg-white rounded-2xl shadow-sm border-l-8 ${borderColor} border-t border-r border-b border-gray-100 p-4 xl:p-5 relative flex flex-col justify-between overflow-hidden ${
+        compact ? 'h-24' : 'h-32'
       }`}
     >
-      {/* Tambahan pr-16 di sini untuk memberi jarak aman agar teks tidak nabrak icon */}
-      <div className="pr-16">
-        <h3 className={`text-black font-semibold ${compact ? 'text-base' : 'text-lg'}`}>{label}</h3>
-        {/* Ukuran font disesuaikan dari text-3xl ke text-2xl agar lebih aman untuk angka jutaan */}
-        <span className={`font-bold text-black leading-tight block mt-2 break-words ${compact ? 'text-xl' : 'text-2xl'}`}>
+      {/* pr-12 untuk jaga jarak, whitespace-nowrap agar pantang turun baris */}
+      <div className="pr-12">
+        <h3 className={`text-black font-semibold truncate ${compact ? 'text-sm' : 'text-sm xl:text-base'}`}>
+          {label}
+        </h3>
+        <span className={`font-bold text-black leading-none block mt-2 tracking-tight whitespace-nowrap ${compact ? 'text-lg' : 'text-xl'}`}>
           {value}
         </span>
       </div>
-      <div className={`absolute bottom-4 right-4 ${compact ? 'w-9 h-9' : 'w-12 h-12'} ${iconBg} rounded-full flex items-center justify-center`}>
-        <Icon className={`${compact ? 'w-5 h-5' : 'w-6 h-6'} ${iconColor}`} strokeWidth={2} />
+      
+      {/* Ukuran icon diperkecil dan ditarik sedikit ke sudut */}
+      <div className={`absolute bottom-4 right-4 ${compact ? 'w-8 h-8' : 'w-10 h-10'} ${iconBg} rounded-full flex items-center justify-center`}>
+        <Icon className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} ${iconColor}`} strokeWidth={2} />
       </div>
     </div>
   );
