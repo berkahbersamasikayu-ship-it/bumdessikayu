@@ -213,13 +213,15 @@ function MetricCard({
 }) {
   return (
     <div
-      className={`bg-white rounded-2xl shadow-sm border-l-8 ${borderColor} border-t border-r border-b border-gray-100 p-5 relative flex flex-col justify-between ${
+      className={`bg-white rounded-2xl shadow-sm border-l-8 ${borderColor} border-t border-r border-b border-gray-100 p-5 relative flex flex-col justify-between overflow-hidden ${
         compact ? 'h-24' : 'h-36'
       }`}
     >
-      <div>
+      {/* Tambahan pr-16 di sini untuk memberi jarak aman agar teks tidak nabrak icon */}
+      <div className="pr-16">
         <h3 className={`text-black font-semibold ${compact ? 'text-base' : 'text-lg'}`}>{label}</h3>
-        <span className={`font-bold text-black leading-none block mt-2 ${compact ? 'text-2xl' : 'text-3xl'}`}>
+        {/* Ukuran font disesuaikan dari text-3xl ke text-2xl agar lebih aman untuk angka jutaan */}
+        <span className={`font-bold text-black leading-tight block mt-2 break-words ${compact ? 'text-xl' : 'text-2xl'}`}>
           {value}
         </span>
       </div>
