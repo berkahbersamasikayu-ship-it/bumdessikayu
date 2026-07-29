@@ -110,19 +110,20 @@ export default function BukuKasPage() {
         <div className="flex flex-wrap items-end gap-4">
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Periode</label>
-            <div className="flex items-center gap-2">
+            {/* Ganti bagian ini */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="h-11 w-40 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
+                className="h-11 w-full sm:w-44 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
               />
-              <span className="text-sm text-gray-500">s/d</span>
+              <span className="text-sm text-gray-500 hidden sm:block">s/d</span>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="h-11 w-40 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
+                className="h-11 w-full sm:w-44 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
               />
             </div>
           </div>
@@ -193,30 +194,33 @@ export default function BukuKasPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <h2 className="text-xl font-bold text-black">Buku Kas</h2>
 
-          <div className="flex items-center gap-3">
-            <div className="relative">
+          {/* Ganti bagian ini */}
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+            <div className="relative w-full md:w-auto">
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari keterangan / no. transaksi..."
-                className="h-10 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-900"
+                className="h-10 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-900"
               />
             </div>
 
-            <button
-              onClick={() => handleExport('excel')}
-              className="flex items-center gap-2 h-10 px-4 rounded-full bg-green-600 text-white text-sm font-semibold hover:bg-green-700"
-            >
-              <FileSpreadsheet size={16} /> Export Excel
-            </button>
-            <button
-              onClick={() => handleExport('pdf')}
-              className="flex items-center gap-2 h-10 px-4 rounded-full bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800"
-            >
-              <FileText size={16} /> Export PDF
-            </button>
+            <div className="flex items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
+              <button
+                onClick={() => handleExport('excel')}
+                className="flex-1 md:flex-none justify-center flex items-center gap-2 h-10 px-4 rounded-full bg-green-600 text-white text-sm font-semibold hover:bg-green-700"
+              >
+                <FileSpreadsheet size={16} /> Export Excel
+              </button>
+              <button
+                onClick={() => handleExport('pdf')}
+                className="flex-1 md:flex-none justify-center flex items-center gap-2 h-10 px-4 rounded-full bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800"
+              >
+                <FileText size={16} /> Export PDF
+              </button>
+            </div>
           </div>
         </div>
 

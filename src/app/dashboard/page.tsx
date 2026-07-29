@@ -217,12 +217,12 @@ function MetricCard({
         compact ? 'h-24' : 'h-32'
       }`}
     >
-      {/* Tambahkan h-full, flex, flex-col, dan justify-between di sini */}
-      <div className="pr-12 h-full flex flex-col justify-between">
-        <h3 className={`text-black font-semibold ${compact ? 'text-sm' : 'text-sm xl:text-base'}`}>
+      {/* Tambahan pr-10 untuk mobile, font dibuat adaptif (kecil di HP, membesar otomatis di layar lebar) */}
+      <div className="pr-10 md:pr-12 h-full flex flex-col justify-between">
+        <h3 className={`text-black font-semibold ${compact ? 'text-xs sm:text-sm' : 'text-sm xl:text-base'}`}>
           {label}
         </h3>
-        <span className={`font-bold text-black leading-none block tracking-tight whitespace-nowrap ${compact ? 'text-lg' : 'text-xl'}`}>
+        <span className={`font-bold text-black leading-none block tracking-tight whitespace-nowrap ${compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'}`}>
           {value}
         </span>
       </div>

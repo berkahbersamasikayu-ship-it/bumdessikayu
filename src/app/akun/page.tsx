@@ -75,35 +75,35 @@ export default function ManajemenAkunPage() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <table className="w-full text-left text-sm">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 overflow-x-auto">
+        <table className="w-full text-left border-collapse border border-gray-200">
           <thead>
-            <tr className="text-gray-700 border-b border-gray-200">
-              <th className="py-3 pr-3 font-semibold">No.</th>
-              <th className="py-3 pr-3 font-semibold">Nama</th>
-              <th className="py-3 pr-3 font-semibold">Username</th>
-              <th className="py-3 pr-3 font-semibold">Status</th>
-              <th className="py-3 pr-3 font-semibold text-center">Aksi</th>
+            <tr className="bg-green-700 text-white">
+              <th className="p-3 border border-gray-200 text-sm font-semibold">No.</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Nama</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Username</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Status</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {isLoading ? (
-              <tr><td colSpan={5} className="py-8 text-center text-gray-400">Memuat data...</td></tr>
+              <tr><td colSpan={5} className="p-6 text-center text-gray-500 border border-gray-200 text-base">Memuat data...</td></tr>
             ) : data.length === 0 ? (
-              <tr><td colSpan={5} className="py-8 text-center text-gray-400 italic">Belum ada akun.</td></tr>
+              <tr><td colSpan={5} className="p-6 text-center text-gray-500 italic border border-gray-200 text-base">Belum ada akun.</td></tr>
             ) : (
               data.map((akun, idx) => (
-                <tr key={akun.id}>
-                  <td className="py-3 pr-3 text-gray-700">{idx + 1}.</td>
-                  <td className="py-3 pr-3 text-gray-900 font-medium">{akun.nama}</td>
-                  <td className="py-3 pr-3 text-gray-700">{akun.username}</td>
-                  <td className="py-3 pr-3">
+                <tr key={akun.id} className="odd:bg-white even:bg-gray-50 text-gray-800 hover:bg-green-50 transition-colors">
+                  <td className="p-3 border border-gray-200 text-base">{idx + 1}.</td>
+                  <td className="p-3 border border-gray-200 text-base font-medium text-gray-900">{akun.nama}</td>
+                  <td className="p-3 border border-gray-200 text-base">{akun.username}</td>
+                  <td className="p-3 border border-gray-200 text-base">
                     <span className={akun.status === 'Aktif' ? 'text-green-700 font-medium' : 'text-gray-400 font-medium'}>
                       {akun.status === 'Aktif' ? 'Aktif' : 'Tidak Aktif'}
                     </span>
                   </td>
-                  <td className="py-3 pr-3 text-center">
-                    <div className="flex items-center justify-center gap-2 text-sm font-semibold">
+                  <td className="p-3 border border-gray-200 text-center">
+                    <div className="flex items-center justify-center gap-2 text-base font-semibold">
                       <button onClick={() => setEditAkun(akun)} className="text-blue-700 hover:underline">
                         Edit
                       </button>
