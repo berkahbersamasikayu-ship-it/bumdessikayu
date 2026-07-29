@@ -130,7 +130,7 @@ export default function DashboardPage() {
       )}
 
       {/* Grafik + Transaksi Terakhir */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <div className="bg-white rounded-2xl shadow-sm border border-green-500 p-6">
           <h2 className="text-lg font-bold text-black mb-4">Pemasukan vs Pengeluaran (6 bulan)</h2>
           <div className="flex items-end gap-3 h-40">
@@ -217,17 +217,16 @@ function MetricCard({
         compact ? 'h-24' : 'h-32'
       }`}
     >
-      {/* pr-12 untuk jaga jarak, whitespace-nowrap agar pantang turun baris */}
-      <div className="pr-12">
+      {/* Tambahkan h-full, flex, flex-col, dan justify-between di sini */}
+      <div className="pr-12 h-full flex flex-col justify-between">
         <h3 className={`text-black font-semibold ${compact ? 'text-sm' : 'text-sm xl:text-base'}`}>
           {label}
         </h3>
-        <span className={`font-bold text-black leading-none block mt-2 tracking-tight whitespace-nowrap ${compact ? 'text-lg' : 'text-xl'}`}>
+        <span className={`font-bold text-black leading-none block tracking-tight whitespace-nowrap ${compact ? 'text-lg' : 'text-xl'}`}>
           {value}
         </span>
       </div>
       
-      {/* Ukuran icon diperkecil dan ditarik sedikit ke sudut */}
       <div className={`absolute bottom-4 right-4 ${compact ? 'w-8 h-8' : 'w-10 h-10'} ${iconBg} rounded-full flex items-center justify-center`}>
         <Icon className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} ${iconColor}`} strokeWidth={2} />
       </div>
