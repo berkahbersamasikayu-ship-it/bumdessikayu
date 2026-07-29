@@ -115,14 +115,14 @@ export default function BukuKasPage() {
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="h-11 w-45 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
+                className="h-11 w-40 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
               />
               <span className="text-sm text-gray-500">s/d</span>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="h-11 w-45 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
+                className="h-11 w-40 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
               />
             </div>
           </div>
@@ -132,7 +132,7 @@ export default function BukuKasPage() {
             <select
               value={unitUsahaId}
               onChange={(e) => setUnitUsahaId(e.target.value)}
-              className="w-45 h-11 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="w-40 h-11 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900"
             >
               <option value="">Semua Unit Usaha</option>
               {unitUsahaList.map((u) => (
@@ -146,7 +146,7 @@ export default function BukuKasPage() {
             <select
               value={jenis}
               onChange={(e) => setJenis(e.target.value)}
-              className="w-45 h-11 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="w-40 h-11 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900"
             >
               <option value="">Semua Jenis Transaksi</option>
               <option value="Pemasukan">Pemasukan</option>
