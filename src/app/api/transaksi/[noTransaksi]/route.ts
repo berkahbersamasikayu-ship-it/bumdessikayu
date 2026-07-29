@@ -81,7 +81,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ no
     for (const t of semuaTransaksi) {
       saldoBerjalan += t.jenis === 'Pemasukan' ? Number(t.nominal) : -Number(t.nominal);
       await sql`
-        UPDATE transaksi SET saldo_setelah = ${saldoBerjalan} WHERE no_transaksi = ${t.no_transaksi}
+        UPDATE transaksi SET saldosetelahtransaksi = ${saldoBerjalan} WHERE no_transaksi = ${t.no_transaksi}
       `;
     }
 
