@@ -9,7 +9,7 @@ export default function UnitUsahaLayout({
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
       
-      <main className="flex-1 p-8 lg:ml-68">
+      <main className="lg:ml-64 p-4 pt-20 md:p-6 md:pt-24 lg:p-8 w-full overflow-x-hidden">
         {children}
       </main>
     </div>

@@ -108,22 +108,22 @@ export default function BukuKasPage() {
       {/* Filter - Diubah menggunakan flex justify-between agar tombol ke kanan */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-end gap-4">
-          <div>
+          {/* Ganti HANYA bagian div Periode ini */}
+          <div className="w-full sm:w-auto">
             <label className="block text-sm font-semibold text-black mb-1.5">Periode</label>
-            {/* Ganti bagian ini */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <div className="flex items-center gap-2 w-full">
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="h-11 w-full sm:w-44 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
+                className="h-11 w-full sm:w-44 flex-1 rounded-lg border border-gray-300 px-2 sm:px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer min-w-0"
               />
-              <span className="text-sm text-gray-500 hidden sm:block">s/d</span>
+              <span className="text-sm text-gray-500 shrink-0">s/d</span>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="h-11 w-full sm:w-44 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
+                className="h-11 w-full sm:w-44 flex-1 rounded-lg border border-gray-300 px-2 sm:px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer min-w-0"
               />
             </div>
           </div>

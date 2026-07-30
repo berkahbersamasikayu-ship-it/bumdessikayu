@@ -79,10 +79,10 @@ export default function ManajemenAkunPage() {
         <table className="w-full text-left border-collapse border border-gray-200">
           <thead>
             <tr className="bg-green-700 text-white">
-              <th className="p-3 border border-gray-200 text-sm font-semibold">No.</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Nama</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Username</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Status</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">No.</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Nama</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Username</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Status</th>
               <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Aksi</th>
             </tr>
           </thead>
@@ -94,10 +94,10 @@ export default function ManajemenAkunPage() {
             ) : (
               data.map((akun, idx) => (
                 <tr key={akun.id} className="odd:bg-white even:bg-gray-50 text-gray-800 hover:bg-green-50 transition-colors">
-                  <td className="p-3 border border-gray-200 text-base">{idx + 1}.</td>
+                  <td className="p-3 border border-gray-200 text-base text-center">{idx + 1}.</td>
                   <td className="p-3 border border-gray-200 text-base font-medium text-gray-900">{akun.nama}</td>
                   <td className="p-3 border border-gray-200 text-base">{akun.username}</td>
-                  <td className="p-3 border border-gray-200 text-base">
+                  <td className="p-3 border border-gray-200 text-base text-center">
                     <span className={akun.status === 'Aktif' ? 'text-green-700 font-medium' : 'text-gray-400 font-medium'}>
                       {akun.status === 'Aktif' ? 'Aktif' : 'Tidak Aktif'}
                     </span>
