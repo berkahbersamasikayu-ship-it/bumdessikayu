@@ -13,8 +13,8 @@ interface DashboardData {
   pengeluaranBulanIni: number;
   jumlahTransaksi: number;
   saldoPerUnit: { nama: string; saldo: number }[];
-  grafikBulanan: { bulan: string; pemasukan: number; pengeluaran: number }[];
-  transaksiTerakhir: { keterangan: string; tanggal: string; nominal: number; jenis: 'pemasukan' | 'pengeluaran' }[];
+  grafikBulanan: { bulan: string; Pemasukan: number; Pengeluaran: number }[];
+  transaksiTerakhir: { keterangan: string; tanggal: string; nominal: number; jenis: 'Pemasukan' | 'Pengeluaran' }[];
 }
 
 function formatRupiah(value: number) {
@@ -56,7 +56,7 @@ export default function DashboardPage() {
   }
 
   const maxValue = Math.max(
-    ...data.grafikBulanan.flatMap((d) => [d.pemasukan, d.pengeluaran]),
+    ...data.grafikBulanan.flatMap((d) => [d.Pemasukan, d.Pengeluaran]),
     1
   );
 
@@ -139,11 +139,11 @@ export default function DashboardPage() {
                 <div className="flex items-end gap-1 h-32 w-full justify-center">
                   <div
                     className="w-4 bg-green-500 rounded-sm"
-                    style={{ height: `${(d.pemasukan / maxValue) * 100}%` }}
+                    style={{ height: `${(d.Pemasukan / maxValue) * 100}%` }}
                   />
                   <div
                     className="w-4 bg-red-500 rounded-sm"
-                    style={{ height: `${(d.pengeluaran / maxValue) * 100}%` }}
+                    style={{ height: `${(d.Pengeluaran / maxValue) * 100}%` }}
                   />
                 </div>
                 <span className="text-[10px] text-gray-500">{d.bulan}</span>
@@ -178,10 +178,10 @@ export default function DashboardPage() {
                     <td className="p-3 border border-gray-200 text-sm">{t.tanggal}</td>
                     <td
                       className={`p-3 border border-gray-200 text-sm font-semibold text-right ${
-                        t.jenis === 'pemasukan' ? 'text-green-700' : 'text-red-600'
+                        t.jenis === 'Pemasukan' ? 'text-green-700' : 'text-red-600'
                       }`}
                     >
-                      {t.jenis === 'pemasukan' ? '+' : '-'}Rp{t.nominal.toLocaleString('id-ID')}
+                      {t.jenis === 'Pemasukan' ? '+' : '-'}Rp{t.nominal.toLocaleString('id-ID')}
                     </td>
                   </tr>
                 ))}
