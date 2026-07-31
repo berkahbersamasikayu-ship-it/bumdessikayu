@@ -7,6 +7,13 @@ import { sessionOptions, SessionData } from '@/lib/session';
 
 export async function GET() {
   try {
+    const cookieStore = await cookies();
+    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
+
+    if (!session.isLoggedIn || !session.userId) {
+      return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });
+    }
+    
     const rows = await sql`
       SELECT
         u.id,

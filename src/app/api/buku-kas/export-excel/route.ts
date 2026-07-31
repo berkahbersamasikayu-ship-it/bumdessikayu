@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import ExcelJS from 'exceljs';
+import { cookies } from 'next/headers';
+import { getIronSession } from 'iron-session';
+import { sessionOptions, SessionData } from '@/lib/session';
+
 
 export async function GET(req: NextRequest) {
   try {
+    const cookieStore = await cookies();
+    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
+
+    if (!session.isLoggedIn || !session.userId) {
+      return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const dateFrom = searchParams.get('dateFrom') || null;
     const dateTo = searchParams.get('dateTo') || null;

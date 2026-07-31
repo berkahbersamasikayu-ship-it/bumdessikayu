@@ -6,6 +6,13 @@ import { sessionOptions, SessionData } from '@/lib/session';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ noTransaksi: string }> }) {
   try {
+    const cookieStore = await cookies();
+    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
+
+    if (!session.isLoggedIn || !session.userId) {
+      return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });
+    }
+    
     const { noTransaksi } = await params;
 
     const result = await sql`

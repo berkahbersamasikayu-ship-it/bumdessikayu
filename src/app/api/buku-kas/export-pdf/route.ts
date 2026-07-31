@@ -3,9 +3,20 @@ import { sql } from '@/lib/db';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { getLogoBase64 } from '@/lib/get-logo-base64';
+import { cookies } from 'next/headers';
+import { getIronSession } from 'iron-session';
+import { sessionOptions, SessionData } from '@/lib/session';
+
 
 export async function GET(req: NextRequest) {
   try {
+    const cookieStore = await cookies();
+    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
+
+    if (!session.isLoggedIn || !session.userId) {
+      return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const dateFrom = searchParams.get('dateFrom') || null;
     const dateTo = searchParams.get('dateTo') || null;

@@ -108,7 +108,6 @@ export default function BukuKasPage() {
       {/* Filter - Diubah menggunakan flex justify-between agar tombol ke kanan */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-end gap-4">
-          {/* Ganti HANYA bagian div Periode ini */}
           <div className="w-full sm:w-auto">
             <label className="block text-sm font-semibold text-black mb-1.5">Periode</label>
             <div className="flex items-center gap-2 w-full">
