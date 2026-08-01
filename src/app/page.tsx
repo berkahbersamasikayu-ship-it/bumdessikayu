@@ -156,9 +156,6 @@ export default function TransparansiPage() {
           )}
         </div>
 
-        <p className="text-center text-xs text-gray-400 mt-6">
-          Data bulan/tahun yang masih berjalan belum ditampilkan untuk menjaga keakuratan laporan.
-        </p>
       </div>
     </div>
   );
