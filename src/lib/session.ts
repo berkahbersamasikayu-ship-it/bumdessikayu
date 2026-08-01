@@ -4,6 +4,7 @@ export interface SessionData {
   userId?: number;
   nama?: string;
   username?: string;
+  role?: 'Bumdes' | 'Umum';
   isLoggedIn: boolean;
 }
 

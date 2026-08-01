@@ -4,12 +4,13 @@ import { put } from '@vercel/blob';
 import { cookies } from 'next/headers';
 import { getIronSession } from 'iron-session';
 import { SessionData, sessionOptions } from '@/lib/session';
+import { requireEditor } from '@/lib/require-editor';
 
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
+    const { error, session } = await requireEditor();
+    if (error) return error;
     
     if (!session.isLoggedIn || !session.userId) {
       return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });
