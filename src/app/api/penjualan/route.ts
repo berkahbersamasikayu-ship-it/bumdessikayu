@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { cookies } from 'next/headers';
-import { getIronSession } from 'iron-session';
-import { sessionOptions, SessionData } from '@/lib/session';
 import { requireEditor } from '@/lib/require-editor';
 
 export async function GET(req: NextRequest) {
