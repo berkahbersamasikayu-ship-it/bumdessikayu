@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { requireEditor } from '@/lib/require-editor';
+import { requireEditor, requireLoggedIn } from '@/lib/require-editor';
 
 export async function GET(req: NextRequest) {
   try {
-    const { error, session } = await requireEditor();
+    const { error, session } = await requireLoggedIn();
     if (error) return error;
 
     if (!session.isLoggedIn || !session.userId) {
