@@ -1,9 +1,9 @@
-// src/app/(dashboard)/monitoring/greenhouse/page.tsx
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import AddGreenhouseModal from '../../components/ui/monitoring/AddGreenhouseModal';
+import { useCurrentUser } from '@/lib/useCurrentUser';
 
 interface GreenhouseRow {
   id: string;
@@ -35,6 +35,7 @@ const labelMap: Record<string, string> = {
 };
 
 export default function MonitoringGreenhousePage() {
+  const { isViewer } = useCurrentUser();
   const [search, setSearch] = useState('');
   const [data, setData] = useState<GreenhouseRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,12 +85,14 @@ export default function MonitoringGreenhousePage() {
             />
           </div>
 
-          <button
-            onClick={() => setShowModal(true)}
-            className="h-11 px-6 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors shrink-0"
-          >
-            Tambah Data
-          </button>
+          {!isViewer && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="h-11 px-6 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors shrink-0"
+            >
+              Tambah Data
+            </button>
+          )}
         </div>
       </div>
 
@@ -130,7 +133,7 @@ export default function MonitoringGreenhousePage() {
         </table>
       </div>
 
-      <AddGreenhouseModal open={showModal} onClose={() => setShowModal(false)} onSuccess={fetchData} />
+      {!isViewer && <AddGreenhouseModal open={showModal} onClose={() => setShowModal(false)} onSuccess={fetchData} />}
     </div>
   );
 }

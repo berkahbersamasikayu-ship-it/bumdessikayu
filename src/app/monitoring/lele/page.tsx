@@ -7,10 +7,13 @@ import AddKolamModal from '../../components/ui/monitoring/AddKolamModal';
 import AddPakanModal from '../../components/ui/monitoring/AddPakanModal';
 import AddPertumbuhanModal from '../../components/ui/monitoring/AddPertumbuhanModal';
 import AddKualitasModal from '../../components/ui/monitoring/AddKualitasModal';
+import { useCurrentUser } from '@/lib/useCurrentUser';
+
 
 type TabType = 'identitas' | 'pakan' | 'pertumbuhan' | 'kualitas';
 
 export default function MonitoringLelePage() {
+  const { isViewer } = useCurrentUser();
   const [tab, setTab] = useState<TabType>('identitas');
   const [search, setSearch] = useState('');
   const [data, setData] = useState<any[]>([]);
@@ -90,12 +93,14 @@ export default function MonitoringLelePage() {
             />
           </div>
 
-          <button
-            onClick={() => setShowModal(true)}
-            className="h-11 px-6 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors shrink-0"
-          >
-            Tambah Data
-          </button>
+          {!isViewer && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="h-11 px-6 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors shrink-0"
+            >
+              Tambah Data
+            </button>
+          )}
         </div>
       </div>
 
@@ -260,10 +265,15 @@ export default function MonitoringLelePage() {
         )}
       </div>
 
-      <AddKolamModal open={showModal && tab === 'identitas'} onClose={() => setShowModal(false)} onSuccess={fetchData} />
-      <AddPakanModal open={showModal && tab === 'pakan'} onClose={() => setShowModal(false)} onSuccess={fetchData} />
-      <AddPertumbuhanModal open={showModal && tab === 'pertumbuhan'} onClose={() => setShowModal(false)} onSuccess={fetchData} />
-      <AddKualitasModal open={showModal && tab === 'kualitas'} onClose={() => setShowModal(false)} onSuccess={fetchData} />
+      {!isViewer && (
+        <>
+          <AddKolamModal open={showModal && tab === 'identitas'} onClose={() => setShowModal(false)} onSuccess={fetchData} />
+          <AddPakanModal open={showModal && tab === 'pakan'} onClose={() => setShowModal(false)} onSuccess={fetchData} />
+          <AddPertumbuhanModal open={showModal && tab === 'pertumbuhan'} onClose={() => setShowModal(false)} onSuccess={fetchData} />
+          <AddKualitasModal open={showModal && tab === 'kualitas'} onClose={() => setShowModal(false)} onSuccess={fetchData} />
+        </>
+      )}
+
     </div>
   );
 }

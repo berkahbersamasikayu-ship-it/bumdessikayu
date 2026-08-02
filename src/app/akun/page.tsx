@@ -1,9 +1,10 @@
-// src/app/(dashboard)/akun/page.tsx
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
 import AddAkunModal from '../components/ui/AddAkunModal';
 import EditAkunModal from '../components/ui/EditAkunModal';
+import { useCurrentUser } from '@/lib/useCurrentUser';
+
 
 interface AkunRow {
   id: string;
@@ -13,6 +14,7 @@ interface AkunRow {
 }
 
 export default function ManajemenAkunPage() {
+  const { isViewer } = useCurrentUser();
   const [data, setData] = useState<AkunRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -32,8 +34,8 @@ export default function ManajemenAkunPage() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!isViewer) fetchData();
+  }, [fetchData, isViewer]);
 
   const handleToggleStatus = async (akun: AkunRow) => {
     const newStatus = akun.status === 'Aktif' ? 'Tidak Aktif' : 'Aktif';
@@ -62,6 +64,14 @@ export default function ManajemenAkunPage() {
       setProcessingId(null);
     }
   };
+
+  if (isViewer) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <p className="text-gray-500">Akun viewer tidak memiliki akses ke halaman Manajemen Akun.</p>
+      </div>
+    );
+  }
 
   return (
     <div>

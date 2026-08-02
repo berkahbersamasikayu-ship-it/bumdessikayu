@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Calendar } from 'lucide-react';
 import AddPenjualanModal from '../components/ui/AddPenjualanModal';
+import { useCurrentUser } from '@/lib/useCurrentUser';
+
 
 interface UnitUsaha {
   id: string;
@@ -21,6 +23,7 @@ interface PenjualanRow {
 }
 
 export default function DataPenjualanPage() {
+  const { isViewer } = useCurrentUser();
   const [unitUsahaList, setUnitUsahaList] = useState<UnitUsaha[]>([]);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -107,12 +110,14 @@ export default function DataPenjualanPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-black">Data Penjualan</h2>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="px-6 py-2.5 rounded-full bg-blue-800 text-white text-sm font-semibold hover:bg-green-800 transition-colors"
-          >
-            Tambah Data
-          </button>
+          {!isViewer && (
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-6 py-2.5 rounded-full bg-blue-800 text-white text-sm font-semibold hover:bg-green-800 transition-colors"
+            >
+              Tambah Data
+            </button>
+          )}
         </div>
         
         <div className="overflow-x-auto">
@@ -153,11 +158,13 @@ export default function DataPenjualanPage() {
         </div>
       </div>
 
-      <AddPenjualanModal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSuccess={fetchData}
-      />
+      {!isViewer && (
+        <AddPenjualanModal
+          open={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onSuccess={fetchData}
+        />
+      )}
     </div>
   );
 }

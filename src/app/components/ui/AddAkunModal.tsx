@@ -16,6 +16,7 @@ export default function AddAkunModal({
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [konfirmasiPassword, setKonfirmasiPassword] = useState('');
+  const [role, setRole] = useState<'Bumdes' | 'Umum'>('Bumdes');
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -26,6 +27,7 @@ export default function AddAkunModal({
     setUsername('');
     setPassword('');
     setKonfirmasiPassword('');
+    setRole('Bumdes');
     setErrorMessage('');
     onClose();
   };
@@ -54,7 +56,7 @@ export default function AddAkunModal({
       const res = await fetch('/api/akun', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nama, username, password }),
+        body: JSON.stringify({ nama, username, password, role }),
       });
 
       const data = await res.json();
@@ -128,6 +130,32 @@ export default function AddAkunModal({
                 placeholder="Masukkan Ulang Password"
                 className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900"
               />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-black mb-1.5">Role</label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  checked={role === 'Bumdes'}
+                  onChange={() => setRole('Bumdes')}
+                  className="w-4 h-4 accent-green-700"
+                />
+                Bumdes <span className="text-gray-400">(bisa mengelola data)</span>
+              </label>
+              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  checked={role === 'Umum'}
+                  onChange={() => setRole('Umum')}
+                  className="w-4 h-4 accent-green-700"
+                />
+                Umum <span className="text-gray-400">(hanya bisa melihat)</span>
+              </label>
             </div>
           </div>
 
