@@ -15,7 +15,7 @@ interface TransaksiRow {
   tanggal: string;
   keterangan: string;
   unitUsaha: string;
-  jenis: 'Pemasukan' | 'Pengeluaran';
+  jenis: 'Pemasukan' | 'Pengeluaran' | 'saldo_awal';
   nominal: number;
   saldoSetelah: number;
   buktiFileUrl: string | null;
@@ -260,7 +260,7 @@ export default function BukuKasPage() {
                     <td className="p-3 border border-gray-200 text-base">{t.keterangan}</td>
                     <td className="p-3 border border-gray-200 text-base">{t.unitUsaha}</td>
                     <td className="p-3 border border-gray-200 text-base text-right text-green-700 font-medium">
-                      {t.jenis === 'Pemasukan' ? formatRupiah(t.nominal) : '-'}
+                      {['Pemasukan', 'saldo_awal'].includes(t.jenis) ? formatRupiah(t.nominal) : '-'}
                     </td>
                     <td className="p-3 border border-gray-200 text-base text-right text-red-600 font-medium">
                       {t.jenis === 'Pengeluaran' ? formatRupiah(t.nominal) : '-'}

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 
 interface DashboardData {
+  userName: string;
   saldoKas: number;
   pemasukanBulanIni: number;
   pengeluaranBulanIni: number;
@@ -67,7 +68,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-8 text-black">Selamat Datang, Etmin</h1>
+      <h1 className="text-2xl font-bold mb-8 text-black">Selamat Datang, {data.userName}</h1>
 
       {/* Metric cards baris 1 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">

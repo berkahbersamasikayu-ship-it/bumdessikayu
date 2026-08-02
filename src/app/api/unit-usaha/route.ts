@@ -4,12 +4,12 @@ import { sql } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { getIronSession } from 'iron-session';
 import { sessionOptions, SessionData } from '@/lib/session';
-import { requireEditor } from '@/lib/require-editor';
+import { requireEditor, requireLoggedIn } from '@/lib/require-editor';
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
+    const { error, session } = await requireLoggedIn();
+    if (error) return error;
 
     if (!session.isLoggedIn || !session.userId) {
       return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });

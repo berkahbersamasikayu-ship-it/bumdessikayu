@@ -7,6 +7,7 @@ import ConfirmModal from '../components/ui/ConfirmModal';
 import SuccessModal from '../components/ui/SuccessModal';
 import { compressImage } from '@/lib/compress-image';
 import CurrencyInput from '../components/ui/CurrencyInput';
+import { useCurrentUser } from '@/lib/useCurrentUser';
 
 interface UnitUsaha {
   id: string;
@@ -14,6 +15,7 @@ interface UnitUsaha {
 }
 
 export default function InputTransaksiPage() {
+  const { isViewer, isLoading: isLoadingUser } = useCurrentUser();
   const [unitUsahaList, setUnitUsahaList] = useState<UnitUsaha[]>([]);
 
   const [tanggal, setTanggal] = useState('');
@@ -152,6 +154,16 @@ export default function InputTransaksiPage() {
   };
 
   const formatKB = (bytes: number) => `${(bytes / 1024).toFixed(0)} KB`;
+
+  if (isLoadingUser) return null;
+
+  if (isViewer) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <p className="text-gray-500">Akun viewer hanya dapat melihat data, tidak dapat menambah transaksi.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center">
