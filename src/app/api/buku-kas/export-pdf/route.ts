@@ -3,9 +3,6 @@ import { sql } from '@/lib/db';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { getLogoBase64 } from '@/lib/get-logo-base64';
-import { cookies } from 'next/headers';
-import { getIronSession } from 'iron-session';
-import { sessionOptions, SessionData } from '@/lib/session';
 import { requireLoggedIn } from '@/lib/require-editor';
 
 
@@ -54,7 +51,7 @@ export async function GET(req: NextRequest) {
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0); // biru tua, senada tema web
+    doc.setTextColor(0, 0, 0); 
     doc.text('BUMDes Sikayu', logoBase64 ? 36 : 14, headerY);
 
     doc.setFont('helvetica', 'normal');

@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 
     // 1. Ambil semua transaksi bulan target
     const transaksiBulanLalu = await sql`
-      SELECT t.no_transaksi, t.tanggal, t.keterangan, t.jenis, t.nominal, t.saldo_setelah,
+      SELECT t.no_transaksi, t.tanggal, t.keterangan, t.jenis, t.nominal, t.saldosetelahtransaksi, t.unit_usaha_id,
         u.nama AS unit_usaha
       FROM transaksi t
       JOIN unit_usaha u ON u.id = t.unit_usaha_id
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 2. Saldo akhir total (kas keseluruhan)
-    const saldoAkhirTotal = Number(transaksiBulanLalu[transaksiBulanLalu.length - 1].saldo_setelah);
+    const saldoAkhirTotal = Number(transaksiBulanLalu[transaksiBulanLalu.length - 1].saldosetelahtransaksi);
 
     // 3. Generate Excel
     let excelBuffer: Buffer;
@@ -126,7 +126,7 @@ export async function GET(req: NextRequest) {
 
     for (const unit of saldoPerUnit) {
       await sql`
-        INSERT INTO transaksi (tanggal, jenis, unit_usaha_id, keterangan, nominal, saldo_setelah, created_by)
+        INSERT INTO transaksi (tanggal, jenis, unit_usaha_id, keterangan, nominal, saldosetelahtransaki, created_by)
         VALUES (
           ${tanggalSaldoAwal}, 'saldo_awal', ${unit.unit_usaha_id},
           ${'Saldo Awal Bulan - ' + unit.nama_unit}, ${Math.abs(Number(unit.saldo_unit))},
@@ -146,7 +146,7 @@ export async function GET(req: NextRequest) {
       saldoBerjalanGlobal += (t.jenis === 'Pemasukan' || t.jenis === 'saldo_awal')
         ? Number(t.nominal)
         : -Number(t.nominal);
-      await sql`UPDATE transaksi SET saldo_setelah = ${saldoBerjalanGlobal} WHERE no_transaksi = ${t.no_transaksi}`;
+      await sql`UPDATE transaksi SET saldosetelahtransaksi = ${saldoBerjalanGlobal} WHERE no_transaksi = ${t.no_transaksi}`;
     }
 
     return NextResponse.json({

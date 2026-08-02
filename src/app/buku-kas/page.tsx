@@ -4,6 +4,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Search, Calendar, FileSpreadsheet, FileText, ImageIcon, TrendingUp, TrendingDown, Wallet, Pencil } from 'lucide-react';
 import EditTransaksiModal from '../components/ui/EditTransaksiModal';
+import { useCurrentUser } from '@/lib/useCurrentUser';
 
 interface UnitUsaha {
   id: string;
@@ -26,6 +27,7 @@ function formatRupiah(value: number) {
 }
 
 export default function BukuKasPage() {
+  const { isViewer } = useCurrentUser();
   const [unitUsahaList, setUnitUsahaList] = useState<UnitUsaha[]>([]);
 
   const [dateFrom, setDateFrom] = useState('');
@@ -237,17 +239,17 @@ export default function BukuKasPage() {
                 <th className="p-3 border border-gray-200 text-sm font-semibold text-right">Kredit</th>
                 <th className="p-3 border border-gray-200 text-sm font-semibold text-right">Saldo</th>
                 <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Bukti</th>
-                <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Aksi</th>
+                {!isViewer && <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Aksi</th>}
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={10} className="p-6 text-center text-gray-500 border border-gray-200 text-base">Memuat data...</td>
+                  <td colSpan={isViewer ? 9 : 10} className="p-6 text-center text-gray-500 border border-gray-200 text-base">Memuat data...</td>
                 </tr>
               ) : transaksi.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="p-6 text-center text-gray-500 italic border border-gray-200 text-base">
+                  <td colSpan={isViewer ? 9 : 10} className="p-6 text-center text-gray-500 italic border border-gray-200 text-base">
                     Belum ada transaksi yang cocok dengan filter.
                   </td>
                 </tr>
@@ -277,15 +279,16 @@ export default function BukuKasPage() {
                         <span className="text-gray-300">-</span>
                       )}
                     </td>
-                    <td className="p-3 border border-gray-200 text-center">
-                      <button
-                        onClick={() => setEditNoTransaksi(t.noTransaksi)}
-                        className="text-blue-700 hover:text-blue-900 inline-flex justify-center"
-                        title="Edit transaksi"
-                      >
+                    {!isViewer && (
+                      <td className="p-3 border border-gray-200 text-center">
+                        <button
+                          onClick={() => setEditNoTransaksi(t.noTransaksi)}
+                          className="text-blue-700 hover:text-blue-900 inline-flex justify-center"
+                          title="Edit transaksi"
+                        >
                         <Pencil size={20} />
                       </button>
-                    </td>
+                    </td>)}
                   </tr>
                 ))
               )}
@@ -294,12 +297,14 @@ export default function BukuKasPage() {
         </div>
       </div>
       
-      <EditTransaksiModal
-        open={!!editNoTransaksi}
-        noTransaksi={editNoTransaksi}
-        onClose={() => setEditNoTransaksi(null)}
-        onSuccess={fetchBukuKas}
-      />
+      {!isViewer && (
+        <EditTransaksiModal
+          open={!!editNoTransaksi}
+          noTransaksi={editNoTransaksi}
+          onClose={() => setEditNoTransaksi(null)}
+          onSuccess={fetchBukuKas}
+        />
+      )}
     </div>
   );
 }

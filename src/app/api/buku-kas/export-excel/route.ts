@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import ExcelJS from 'exceljs';
-import { cookies } from 'next/headers';
-import { getIronSession } from 'iron-session';
-import { sessionOptions, SessionData } from '@/lib/session';
 import { requireLoggedIn } from '@/lib/require-editor';
 
 
