@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { cookies } from 'next/headers';
-import { getIronSession } from 'iron-session';
-import { sessionOptions, SessionData } from '@/lib/session';
 import { requireLoggedIn } from '@/lib/require-editor';
 
 export async function GET(req: NextRequest) {
@@ -47,7 +44,7 @@ export async function GET(req: NextRequest) {
     `;
 
     const totalPemasukan = rows
-      .filter((r) => r.jenis === 'Pemasukan')
+      .filter((r) => r.jenis === 'Pemasukan' || r.jenis === 'saldo_awal')
       .reduce((sum, r) => sum + Number(r.nominal), 0);
 
     const totalPengeluaran = rows

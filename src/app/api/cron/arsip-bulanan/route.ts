@@ -8,6 +8,11 @@ import { buildExcel, buildPdf } from '@/lib/monitoring-export-helper';
 import { sendArsipPakanEmail } from '@/lib/arsip/send-email-pakan';
 import JSZip from 'jszip';
 
+const namaBulan = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+];
+
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -67,17 +72,17 @@ export async function GET(req: NextRequest) {
     let zipBuffer: Buffer | null = null;
     
     // Filter transaksi yang punya URL bukti
-    const transaksiDenganBukti = transaksiBulanLalu.filter(t => t.bukti_transaksi);
+    const transaksiDenganBukti = transaksiBulanLalu.filter(t => t.bukti_file_url);
     
     if (transaksiDenganBukti.length > 0) {
       // Unduh semua gambar secara paralel menggunakan Promise.all agar cepat
       await Promise.all(transaksiDenganBukti.map(async (trx) => {
         try {
-          const response = await fetch(trx.bukti_transaksi);
+          const response = await fetch(trx.bukti_file_url);
           if (response.ok) {
             const arrayBuffer = await response.arrayBuffer();
             // Ambil ekstensi dari URL (misal: .png, .jpg), default ke .jpg
-            const ekstensi = trx.bukti_transaksi.split('.').pop()?.split('?')[0] || 'jpg';
+            const ekstensi = trx.bukti_file_url.split('.').pop()?.split('?')[0] || 'jpg';
             // Nama file di dalam zip: TRX-202607-001.jpg
             const namaFile = `${trx.no_transaksi}.${ekstensi}`; 
             
@@ -218,6 +223,7 @@ export async function GET(req: NextRequest) {
         if (pakanBulanLalu.length > 0) {
           const jenisPakanLabel: Record<string, string> = { pelet: 'Pelet', maggot: 'Maggot', azolla: 'Azolla' };
           const headers = ['No', 'Tanggal', 'Kolam', 'Jenis Pakan', 'Jumlah (kg)', 'Jam', 'Sisa (kg)'];
+          const periodePakan = `${namaBulan[bulanTarget - 1]} ${tahunTarget}`;
           const body = pakanBulanLalu.map((r, idx) => [
             idx + 1,
             new Date(r.tanggal).toLocaleDateString('id-ID'),
@@ -229,10 +235,10 @@ export async function GET(req: NextRequest) {
           ]);
 
           const excelBufferPakan = await buildExcel(
-            `Monitoring Pakan ${bulanTarget}-${tahunTarget}`, headers, body
+            `Monitoring Pakan ${periodePakan}`, headers, body
           );
           const pdfBufferPakan = buildPdf(
-            `Monitoring Pakan ${bulanTarget}-${tahunTarget}`, headers, body
+            `Monitoring Pakan ${periodePakan}`, headers, body
           );
 
           const namaFileExcelPakan = `arsip-pakan/${tahunTarget}-${String(bulanTarget).padStart(2, '0')}-monitoring-pakan.xlsx`;

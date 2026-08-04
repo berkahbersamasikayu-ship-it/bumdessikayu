@@ -133,7 +133,7 @@ export default function DashboardPage() {
       {/* Grafik + Transaksi Terakhir */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <div className="bg-white rounded-2xl shadow-sm border border-green-500 p-6">
-          <h2 className="text-lg font-bold text-black mb-4">Pemasukan vs Pengeluaran (6 bulan)</h2>
+          <h2 className="text-lg font-bold text-black mb-4">Pemasukan vs Pengeluaran</h2>
           <div className="flex items-end gap-3 h-40">
             {data.grafikBulanan.map((d) => (
               <div key={d.bulan} className="flex flex-col items-center gap-1 flex-1">
