@@ -112,7 +112,7 @@ export default function MonitoringLelePage() {
               onClick={() => handleExport('excel')}
               className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700"
             >
-              <FileSpreadsheet size={16} /> <span className="hidden sm:inline">Export Excel</span>
+              <FileSpreadsheet size={16} />Export Excel
             </button>
             <button
               onClick={() => handleExport('pdf')}
