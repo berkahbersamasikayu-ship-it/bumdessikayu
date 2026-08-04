@@ -8,6 +8,7 @@ import AddPakanModal from '../../components/ui/monitoring/AddPakanModal';
 import AddPertumbuhanModal from '../../components/ui/monitoring/AddPertumbuhanModal';
 import AddKualitasModal from '../../components/ui/monitoring/AddKualitasModal';
 import { useCurrentUser } from '@/lib/useCurrentUser';
+import { FileSpreadsheet, FileText } from 'lucide-react';
 
 
 type TabType = 'identitas' | 'pakan' | 'pertumbuhan' | 'kualitas';
@@ -40,9 +41,18 @@ export default function MonitoringLelePage() {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
       const res = await fetch(`${endpointMap[tab]}?${params.toString()}`);
-      setData(await res.json());
+      const payload = await res.json();
+
+      if (!res.ok || !Array.isArray(payload)) {
+        console.error('Gagal memuat data monitoring:', payload);
+        setData([]);
+        return;
+      }
+
+      setData(payload);
     } catch (err) {
       console.error(err);
+      setData([]);
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +73,11 @@ export default function MonitoringLelePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  const jenisPakanLabel: Record<string, string> = { pelet: 'Pelet', maggot: 'Maggot', azolla: 'Azolla' };
+  const jenisPakanLabel: Record<string, string> = { Pelet: 'Pelet', Maggot: 'Maggot' };
+
+  const handleExport = (format: 'excel' | 'pdf') => {
+    window.open(`${endpointMap[tab]}/export?format=${format}`, '_blank');
+  };
 
   return (
     <div>
@@ -92,6 +106,19 @@ export default function MonitoringLelePage() {
               className="h-11 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-900"
             />
           </div>
+
+          <button
+            onClick={() => handleExport('excel')}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700"
+          >
+            <FileSpreadsheet size={16} /> Export Excel
+          </button>
+          <button
+            onClick={() => handleExport('pdf')}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800"
+          >
+            <FileText size={16} /> Ecport PDF
+          </button>
 
           {!isViewer && (
             <button
@@ -217,7 +244,7 @@ export default function MonitoringLelePage() {
                       <td className="p-3 border border-gray-200 text-base">{p.panjangRataRata ? p.panjangRataRata + ' cm' : '-'}</td>
                       <td className="p-3 border border-gray-200 text-base text-red-600 text-center">{p.jumlahIkanMati} ekor</td>
                       <td className="p-3 border border-gray-200 text-base text-center">{p.jumlahIkanHidup} ekor</td>
-                      <td className="p-3 border border-gray-200 text-base font-semibold text-green-700 text-right">{p.biomassa.toFixed(2)} kg</td>
+                      <td className="p-3 border border-gray-200 text-base font-semibold text-green-700 text-right">{Number(p.biomassa ?? 0).toFixed(2)} kg</td>
                     </tr>
                   ))
                 )}

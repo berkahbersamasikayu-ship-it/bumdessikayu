@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import AddGreenhouseModal from '../../components/ui/monitoring/AddGreenhouseModal';
 import { useCurrentUser } from '@/lib/useCurrentUser';
+import { FileSpreadsheet, FileText } from 'lucide-react';
 
 interface GreenhouseRow {
   id: string;
@@ -68,6 +69,10 @@ export default function MonitoringGreenhousePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
+  const handleExport = (format: 'excel' | 'pdf') => {
+    window.open(`/api/monitoring-greenhouse/export?format=${format}`, '_blank');
+  };
+
   return (
     <div>
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
@@ -85,6 +90,13 @@ export default function MonitoringGreenhousePage() {
             />
           </div>
 
+          <button onClick={() => handleExport('excel')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700">
+            <FileSpreadsheet size={16} /> Export Excel
+          </button>
+          <button onClick={() => handleExport('pdf')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800">
+            <FileText size={16} /> Export PDF
+          </button>
+
           {!isViewer && (
             <button
               onClick={() => setShowModal(true)}
@@ -100,14 +112,14 @@ export default function MonitoringGreenhousePage() {
         <table className="w-full text-left border-collapse border border-gray-200">
           <thead>
             <tr className="bg-green-700 text-white">
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Minggu/Tanggal</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Kondisi GH</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Irigasi Tetes</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Kondisi Tanaman</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Hama/Penyakit</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Pemupukan</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Pembungaan/Pembuahan</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold">Tindakan yang Dilakukan</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Tanggal</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Kondisi GH</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Irigasi Tetes</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Kondisi Tanaman</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Hama/Penyakit</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Pemupukan</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Pembungaan/Pembuahan</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Tindakan yang Dilakukan</th>
             </tr>
           </thead>
           <tbody>

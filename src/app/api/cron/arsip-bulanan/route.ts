@@ -4,6 +4,9 @@ import { put } from '@vercel/blob';
 import { generateExcelArsip } from '../../../../lib/arsip/generate-excel';
 import { generatePdfArsip } from '../../../../lib/arsip/generate-pdf';
 import { sendArsipEmail } from '../../../../lib/arsip/send-email';
+import { buildExcel, buildPdf } from '@/lib/monitoring-export-helper';
+import { sendArsipPakanEmail } from '@/lib/arsip/send-email-pakan';
+import JSZip from 'jszip';
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -25,7 +28,7 @@ export async function GET(req: NextRequest) {
 
     // 1. Ambil semua transaksi bulan target
     const transaksiBulanLalu = await sql`
-      SELECT t.no_transaksi, t.tanggal, t.keterangan, t.jenis, t.nominal, t.saldosetelahtransaksi, t.unit_usaha_id,
+      SELECT t.no_transaksi, t.tanggal, t.keterangan, t.jenis, t.nominal, t.saldosetelahtransaksi, t.unit_usaha_id, t.bukti_file_url,
         u.nama AS unit_usaha
       FROM transaksi t
       JOIN unit_usaha u ON u.id = t.unit_usaha_id
@@ -59,9 +62,43 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'Gagal membuat file PDF, proses dibatalkan.' }, { status: 500 });
     }
 
+    // --- 4.5 GENERATE ZIP BUKTI TRANSAKSI ---
+    const zip = new JSZip();
+    let zipBuffer: Buffer | null = null;
+    
+    // Filter transaksi yang punya URL bukti
+    const transaksiDenganBukti = transaksiBulanLalu.filter(t => t.bukti_transaksi);
+    
+    if (transaksiDenganBukti.length > 0) {
+      // Unduh semua gambar secara paralel menggunakan Promise.all agar cepat
+      await Promise.all(transaksiDenganBukti.map(async (trx) => {
+        try {
+          const response = await fetch(trx.bukti_transaksi);
+          if (response.ok) {
+            const arrayBuffer = await response.arrayBuffer();
+            // Ambil ekstensi dari URL (misal: .png, .jpg), default ke .jpg
+            const ekstensi = trx.bukti_transaksi.split('.').pop()?.split('?')[0] || 'jpg';
+            // Nama file di dalam zip: TRX-202607-001.jpg
+            const namaFile = `${trx.no_transaksi}.${ekstensi}`; 
+            
+            zip.file(namaFile, arrayBuffer);
+          }
+        } catch (error) {
+          console.error(`Gagal download bukti untuk transaksi ${trx.no_transaksi}`, error);
+        }
+      }));
+
+      // Generate buffer ZIP jika ada file yang berhasil dimasukkan
+      if (Object.keys(zip.files).length > 0) {
+        zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      }
+    }
+
     // 5. Upload ke Vercel Blob
     let urlExcel: string;
     let urlPdf: string;
+    let urlZip: string | null = null;
+
     try {
       const namaFileExcel = `arsip/${tahunTarget}-${String(bulanTarget).padStart(2, '0')}-buku-kas.xlsx`;
       const namaFilePdf = `arsip/${tahunTarget}-${String(bulanTarget).padStart(2, '0')}-buku-kas.pdf`;
@@ -77,6 +114,15 @@ export async function GET(req: NextRequest) {
 
       urlExcel = blobExcel.url;
       urlPdf = blobPdf.url;
+
+      if (zipBuffer) {
+        const namaFileZip = `arsip/${tahunTarget}-${String(bulanTarget).padStart(2, '0')}-bukti-transaksi.zip`;
+        const blobZip = await put(namaFileZip, zipBuffer, {
+          access: 'public',
+          contentType: 'application/zip',
+        });
+        urlZip = blobZip.url;
+      }
     } catch (err) {
       console.error('Gagal upload ke Vercel Blob:', err);
       return NextResponse.json({ message: 'Gagal mengunggah arsip, proses dibatalkan.' }, { status: 500 });
@@ -84,21 +130,13 @@ export async function GET(req: NextRequest) {
 
     // 6. Kirim email
     try {
-      await sendArsipEmail({ bulan: bulanTarget, tahun: tahunTarget, saldoAkhir: saldoAkhirTotal, urlExcel, urlPdf });
+      await sendArsipEmail({ bulan: bulanTarget, tahun: tahunTarget, saldoAkhir: saldoAkhirTotal, urlExcel, urlPdf, urlZip });
     } catch (err) {
       console.error('Gagal mengirim email:', err);
       return NextResponse.json({ message: 'Gagal mengirim email, proses dibatalkan. Data belum dihapus.' }, { status: 500 });
     }
 
-    // --- Semua langkah di atas berhasil, lanjut ke tahap database ---
-
-    // 7. Catat arsip sebagai penanda keberhasilan
-    await sql`
-      INSERT INTO arsip_bulanan (bulan, tahun, saldo_akhir, jumlah_transaksi, url_excel, url_pdf, status_email)
-      VALUES (${bulanTarget}, ${tahunTarget}, ${saldoAkhirTotal}, ${transaksiBulanLalu.length}, ${urlExcel}, ${urlPdf}, 'terkirim')
-    `;
-
-    // Hitung saldo akhir PER UNIT USAHA sebelum data dihapus
+    
     const saldoPerUnit = await sql`
       SELECT
         t.unit_usaha_id,
@@ -111,13 +149,20 @@ export async function GET(req: NextRequest) {
     `;
 
     // Hapus semua transaksi bulan yang sudah diarsipkan
-    await sql`
-      DELETE FROM transaksi
-      WHERE EXTRACT(MONTH FROM tanggal) = ${bulanTarget}
-        AND EXTRACT(YEAR FROM tanggal) = ${tahunTarget}
-    `;
+    try {
+      await sql`
+        DELETE FROM transaksi
+        WHERE EXTRACT(MONTH FROM tanggal) = ${bulanTarget}
+          AND EXTRACT(YEAR FROM tanggal) = ${tahunTarget}
+      `;
+    } catch (err) {
+      console.error('Gagal menghapus transaksi lama, kemungkinan masih ada foreign key yang belum diperbaiki:', err);
+      return NextResponse.json({
+        message: 'Gagal menghapus transaksi bulan lalu (kemungkinan constraint FK). Arsip Excel/PDF/email sudah terkirim, tapi data belum terhapus. Cek pg_constraint.',
+      }, { status: 500 });
+    }
 
-    // 8. Buat transaksi Saldo Awal terpisah per unit usaha
+    // Buat transaksi Saldo Awal terpisah per unit usaha
     const bulanBaru = bulanTarget === 12 ? 1 : bulanTarget + 1;
     const tahunBaru = bulanTarget === 12 ? tahunTarget + 1 : tahunTarget;
     const tanggalSaldoAwal = `${tahunBaru}-${String(bulanBaru).padStart(2, '0')}-01`;
@@ -126,7 +171,7 @@ export async function GET(req: NextRequest) {
 
     for (const unit of saldoPerUnit) {
       await sql`
-        INSERT INTO transaksi (tanggal, jenis, unit_usaha_id, keterangan, nominal, saldosetelahtransaki, created_by)
+        INSERT INTO transaksi (tanggal, jenis, unit_usaha_id, keterangan, nominal, saldosetelahtransaksi, created_by)
         VALUES (
           ${tanggalSaldoAwal}, 'saldo_awal', ${unit.unit_usaha_id},
           ${'Saldo Awal Bulan - ' + unit.nama_unit}, ${Math.abs(Number(unit.saldo_unit))},
@@ -135,7 +180,7 @@ export async function GET(req: NextRequest) {
       `;
     }
 
-    // Hitung ulang saldo_setelah global secara kronologis (karena ada beberapa baris saldo_awal sekaligus)
+    // Hitung ulang saldo_setelah global
     const semuaTransaksiBaru = await sql`
       SELECT no_transaksi, jenis, nominal FROM transaksi
       ORDER BY tanggal ASC, created_at ASC
@@ -147,6 +192,87 @@ export async function GET(req: NextRequest) {
         ? Number(t.nominal)
         : -Number(t.nominal);
       await sql`UPDATE transaksi SET saldosetelahtransaksi = ${saldoBerjalanGlobal} WHERE no_transaksi = ${t.no_transaksi}`;
+    }
+
+    // BARU sekarang catat penanda arsip — setelah semua proses transaksi benar-benar sukses
+    await sql`
+      INSERT INTO arsip_bulanan (bulan, tahun, saldo_akhir, jumlah_transaksi, url_excel, url_pdf, url_zip, status_email)
+      VALUES (${bulanTarget}, ${tahunTarget}, ${saldoAkhirTotal}, ${transaksiBulanLalu.length}, ${urlExcel}, ${urlPdf}, ${urlZip}, 'terkirim')
+    `;
+
+    try {
+      const cekArsipPakan = await sql`
+        SELECT id FROM arsip_monitoring_pakan WHERE bulan = ${bulanTarget} AND tahun = ${tahunTarget}
+      `;
+
+      if (cekArsipPakan.length === 0) {
+        const pakanBulanLalu = await sql`
+          SELECT m.tanggal, k.nama_kolam, m.jenis_pakan, m.jumlah_pakan, m.jam_pemberian, m.sisa_pakan
+          FROM monitoring_pakan m
+          JOIN kolam k ON k.id = m.kolam_id
+          WHERE EXTRACT(MONTH FROM m.tanggal) = ${bulanTarget}
+            AND EXTRACT(YEAR FROM m.tanggal) = ${tahunTarget}
+          ORDER BY m.tanggal ASC
+        `;
+
+        if (pakanBulanLalu.length > 0) {
+          const jenisPakanLabel: Record<string, string> = { pelet: 'Pelet', maggot: 'Maggot', azolla: 'Azolla' };
+          const headers = ['No', 'Tanggal', 'Kolam', 'Jenis Pakan', 'Jumlah (kg)', 'Jam', 'Sisa (kg)'];
+          const body = pakanBulanLalu.map((r, idx) => [
+            idx + 1,
+            new Date(r.tanggal).toLocaleDateString('id-ID'),
+            r.nama_kolam,
+            jenisPakanLabel[r.jenis_pakan],
+            Number(r.jumlah_pakan).toFixed(2),
+            r.jam_pemberian || '-',
+            r.sisa_pakan ? Number(r.sisa_pakan).toFixed(2) : '-',
+          ]);
+
+          const excelBufferPakan = await buildExcel(
+            `Monitoring Pakan ${bulanTarget}-${tahunTarget}`, headers, body
+          );
+          const pdfBufferPakan = buildPdf(
+            `Monitoring Pakan ${bulanTarget}-${tahunTarget}`, headers, body
+          );
+
+          const namaFileExcelPakan = `arsip-pakan/${tahunTarget}-${String(bulanTarget).padStart(2, '0')}-monitoring-pakan.xlsx`;
+          const namaFilePdfPakan = `arsip-pakan/${tahunTarget}-${String(bulanTarget).padStart(2, '0')}-monitoring-pakan.pdf`;
+
+          const blobExcelPakan = await put(namaFileExcelPakan, excelBufferPakan, {
+            access: 'public',
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          });
+          const blobPdfPakan = await put(namaFilePdfPakan, pdfBufferPakan, {
+            access: 'public',
+            contentType: 'application/pdf',
+          });
+
+          // Kirim email terpisah untuk arsip pakan (pakai fungsi email yang sudah ada, disesuaikan pesannya)
+          await sendArsipPakanEmail({
+            bulan: bulanTarget,
+            tahun: tahunTarget,
+            jumlahCatatan: pakanBulanLalu.length,
+            urlExcel: blobExcelPakan.url,
+            urlPdf: blobPdfPakan.url,
+          });
+
+          await sql`
+            INSERT INTO arsip_monitoring_pakan (bulan, tahun, jumlah_catatan, url_excel, url_pdf)
+            VALUES (${bulanTarget}, ${tahunTarget}, ${pakanBulanLalu.length}, ${blobExcelPakan.url}, ${blobPdfPakan.url})
+          `;
+
+          // Setelah arsip pakan berhasil dikirim & dicatat, baru hapus data pakan bulan itu
+          await sql`
+            DELETE FROM monitoring_pakan
+            WHERE EXTRACT(MONTH FROM tanggal) = ${bulanTarget}
+              AND EXTRACT(YEAR FROM tanggal) = ${tahunTarget}
+          `;
+        }
+      }
+    } catch (err) {
+      // Kalau arsip pakan gagal, JANGAN batalkan proses arsip keuangan yang sudah selesai duluan
+      // cukup log error-nya, data pakan bulan itu tidak akan terhapus dan bisa dicoba lagi bulan depan
+      console.error('Gagal arsip monitoring pakan (tidak mempengaruhi arsip keuangan):', err);
     }
 
     return NextResponse.json({

@@ -3,36 +3,22 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 
-function RadioGroup({
-  label,
-  name,
-  options,
-  value,
-  onChange,
-}: {
-  label: string;
-  name: string;
-  options: { value: string; label: string }[];
-  value: string;
-  onChange: (v: string) => void;
-}) {
+function SelectGroup({
+  label, value, onChange, options,
+}: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
   return (
     <div>
       <label className="block text-sm font-semibold text-black mb-1.5">{label}</label>
-      <div className="flex flex-wrap gap-4">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900"
+      >
+        <option value="">Pilih {label}</option>
         {options.map((opt) => (
-          <label key={opt.value} className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer">
-            <input
-              type="radio"
-              name={name}
-              checked={value === opt.value}
-              onChange={() => onChange(opt.value)}
-              className="w-4 h-4 accent-green-700"
-            />
-            {opt.label}
-          </label>
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
-      </div>
+      </select>
     </div>
   );
 }
@@ -104,8 +90,8 @@ export default function AddGreenhouseModal({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <div>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-black mb-1.5">Minggu/Tanggal</label>
             <input
               type="date"
@@ -115,76 +101,40 @@ export default function AddGreenhouseModal({
             />
           </div>
 
-          <RadioGroup
-            label="Kondisi GH"
-            name="kondisiGh"
-            value={kondisiGh}
-            onChange={setKondisiGh}
-            options={[
-              { value: 'baik', label: 'Baik' },
-              { value: 'perlu_dibersihkan', label: 'Perlu Dibersihkan' },
-            ]}
-          />
+          <SelectGroup label="Kondisi GH" value={kondisiGh} onChange={setKondisiGh} options={[
+            { value: 'baik', label: 'Baik' },
+            { value: 'perlu_dibersihkan', label: 'Perlu Dibersihkan' },
+          ]} />
 
-          <RadioGroup
-            label="Irigasi Tetes"
-            name="irigasiTetes"
-            value={irigasiTetes}
-            onChange={setIrigasiTetes}
-            options={[
-              { value: 'normal', label: 'Normal' },
-              { value: 'bocor', label: 'Bocor' },
-              { value: 'tersumbat', label: 'Tersumbat' },
-            ]}
-          />
+          <SelectGroup label="Irigasi Tetes" value={irigasiTetes} onChange={setIrigasiTetes} options={[
+            { value: 'normal', label: 'Normal' },
+            { value: 'bocor', label: 'Bocor' },
+            { value: 'tersumbat', label: 'Tersumbat' },
+          ]} />
 
-          <RadioGroup
-            label="Kondisi Tanaman"
-            name="kondisiTanaman"
-            value={kondisiTanaman}
-            onChange={setKondisiTanaman}
-            options={[
-              { value: 'sehat', label: 'Sehat' },
-              { value: 'layu', label: 'Layu' },
-              { value: 'mati', label: 'Mati' },
-            ]}
-          />
+          <SelectGroup label="Kondisi Tanaman" value={kondisiTanaman} onChange={setKondisiTanaman} options={[
+            { value: 'sehat', label: 'Sehat' },
+            { value: 'layu', label: 'Layu' },
+            { value: 'mati', label: 'Mati' },
+          ]} />
 
-          <RadioGroup
-            label="Hama/Penyakit"
-            name="hamaPenyakit"
-            value={hamaPenyakit}
-            onChange={setHamaPenyakit}
-            options={[
-              { value: 'tidak_ada', label: 'Tidak Ada' },
-              { value: 'ada', label: 'Ada' },
-            ]}
-          />
+          <SelectGroup label="Hama/Penyakit" value={hamaPenyakit} onChange={setHamaPenyakit} options={[
+            { value: 'tidak_ada', label: 'Tidak Ada' },
+            { value: 'ada', label: 'Ada' },
+          ]} />
 
-          <RadioGroup
-            label="Pemupukan"
-            name="pemupukan"
-            value={pemupukan}
-            onChange={setPemupukan}
-            options={[
-              { value: 'sudah', label: 'Sudah' },
-              { value: 'belum', label: 'Belum' },
-            ]}
-          />
+          <SelectGroup label="Pemupukan" value={pemupukan} onChange={setPemupukan} options={[
+            { value: 'sudah', label: 'Sudah' },
+            { value: 'belum', label: 'Belum' },
+          ]} />
 
-          <RadioGroup
-            label="Pembungaan/Pembuahan"
-            name="pembungaanPembuahan"
-            value={pembungaanPembuahan}
-            onChange={setPembungaanPembuahan}
-            options={[
-              { value: 'belum', label: 'Belum' },
-              { value: 'berbunga', label: 'Berbunga' },
-              { value: 'berbuah', label: 'Berbuah' },
-            ]}
-          />
+          <SelectGroup label="Pembungaan/Pembuahan" value={pembungaanPembuahan} onChange={setPembungaanPembuahan} options={[
+            { value: 'belum', label: 'Belum' },
+            { value: 'berbunga', label: 'Berbunga' },
+            { value: 'berbuah', label: 'Berbuah' },
+          ]} />
 
-          <div>
+          <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-black mb-1.5">
               Tindakan yang Dilakukan <span className="text-gray-400 font-normal">(opsional)</span>
             </label>
@@ -197,20 +147,13 @@ export default function AddGreenhouseModal({
             />
           </div>
 
-          <div className="flex justify-end gap-3 mt-2">
-            <button
-              type="button"
-              onClick={resetAndClose}
-              disabled={isSaving}
-              className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold text-sm hover:bg-gray-50 disabled:opacity-50"
-            >
+          <div className="md:col-span-2 flex justify-end gap-3 mt-2">
+            <button type="button" onClick={resetAndClose} disabled={isSaving}
+              className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold text-sm hover:bg-gray-50 disabled:opacity-50">
               Batal
             </button>
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="px-5 py-2 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 disabled:opacity-50"
-            >
+            <button type="submit" disabled={isSaving}
+              className="px-5 py-2 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 disabled:opacity-50">
               {isSaving ? 'Menyimpan...' : 'Simpan'}
             </button>
           </div>

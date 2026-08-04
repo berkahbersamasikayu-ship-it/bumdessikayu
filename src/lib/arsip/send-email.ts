@@ -8,12 +8,14 @@ export async function sendArsipEmail({
   saldoAkhir,
   urlExcel,
   urlPdf,
+  urlZip,
 }: {
   bulan: number;
   tahun: number;
   saldoAkhir: number;
   urlExcel: string;
   urlPdf: string;
+  urlZip: string | null;
 }) {
   const namaBulan = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -36,6 +38,7 @@ export async function sendArsipEmail({
         <li>Saldo akhir bulan: <strong>Rp${saldoAkhir.toLocaleString('id-ID')}</strong></li>
         <li>File Excel: <a href="${urlExcel}">Unduh Excel</a></li>
         <li>File PDF: <a href="${urlPdf}">Unduh PDF</a></li>
+        ${urlZip ? `<li><a href="${urlZip}">Download Bukti Transaksi (ZIP)</a></li>` : '<li>Tidak ada lampiran bukti transaksi.</li>'}
       </ul>
       <p>Data transaksi bulan ini telah diarsipkan dan dihapus dari database aktif untuk menjaga performa sistem. Arsip tetap dapat diakses kapan saja melalui link di atas.</p>
       <p>Email ini dikirim otomatis oleh Sistem Keuangan BUMDes Sikayu.</p>

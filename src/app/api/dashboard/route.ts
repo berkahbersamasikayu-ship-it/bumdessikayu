@@ -9,13 +9,13 @@ export async function GET() {
     const userName = session.nama || 'Admin BUMDes';
 
     const saldoKasResult = await sql`
-      SELECT COALESCE(SUM(CASE WHEN jenis='Pemasukan' THEN nominal ELSE -nominal END), 0) AS saldo
+      SELECT COALESCE(SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE -nominal END), 0) AS saldo
       FROM transaksi
     `;
 
     const bulanIniResult = await sql`
       SELECT
-        COALESCE(SUM(CASE WHEN jenis='Pemasukan' THEN nominal ELSE 0 END), 0) AS pemasukan,
+        COALESCE(SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE 0 END), 0) AS pemasukan,
         COALESCE(SUM(CASE WHEN jenis='Pengeluaran' THEN nominal ELSE 0 END), 0) AS pengeluaran,
         COUNT(*) AS jumlah
       FROM transaksi
@@ -24,7 +24,7 @@ export async function GET() {
 
     const saldoPerUnitResult = await sql`
       SELECT u.nama,
-        COALESCE(SUM(CASE WHEN t.jenis='Pemasukan' THEN t.nominal ELSE -t.nominal END), 0) AS saldo
+        COALESCE(SUM(CASE WHEN t.jenis IN ('Pemasukan', 'saldo_awal') THEN t.nominal ELSE -t.nominal END), 0) AS saldo
       FROM unit_usaha u
       LEFT JOIN transaksi t ON t.unit_usaha_id = u.id
       WHERE u.status = 'Aktif'
@@ -35,7 +35,7 @@ export async function GET() {
     const grafikResult = await sql`
       SELECT
         to_char(tanggal, 'Mon YYYY') AS bulan,
-        SUM(CASE WHEN jenis='Pemasukan' THEN nominal ELSE 0 END) AS pemasukan,
+        SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE 0 END) AS pemasukan,
         SUM(CASE WHEN jenis='Pengeluaran' THEN nominal ELSE 0 END) AS pengeluaran
       FROM transaksi
       WHERE tanggal >= (CURRENT_DATE - INTERVAL '6 months')

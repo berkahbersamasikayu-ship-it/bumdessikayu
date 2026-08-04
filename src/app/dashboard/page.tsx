@@ -15,7 +15,7 @@ interface DashboardData {
   jumlahTransaksi: number;
   saldoPerUnit: { nama: string; saldo: number }[];
   grafikBulanan: { bulan: string; pemasukan: number; pengeluaran: number }[];
-  transaksiTerakhir: { keterangan: string; tanggal: string; nominal: number; jenis: 'Pemasukan' | 'Pengeluaran' }[];
+  transaksiTerakhir: { keterangan: string; tanggal: string; nominal: number; jenis: 'Pemasukan' | 'Pengeluaran' | 'saldo_awal' }[];
 }
 
 function formatRupiah(value: number) {
@@ -179,10 +179,10 @@ export default function DashboardPage() {
                     <td className="p-3 border border-gray-200 text-sm">{t.tanggal}</td>
                     <td
                       className={`p-3 border border-gray-200 text-sm font-semibold text-right ${
-                        t.jenis === 'Pemasukan' ? 'text-green-700' : 'text-red-600'
+                        t.jenis === 'Pemasukan' || t.jenis === 'saldo_awal' ? 'text-green-700' : 'text-red-600'
                       }`}
                     >
-                      {t.jenis === 'Pemasukan' ? '+' : '-'}Rp{t.nominal.toLocaleString('id-ID')}
+                      {t.jenis === 'Pemasukan' || t.jenis === 'saldo_awal' ? '+' : '-'}Rp{t.nominal.toLocaleString('id-ID')}
                     </td>
                   </tr>
                 ))}
