@@ -108,6 +108,13 @@ export default function AddPakanModal({
     i.toString().padStart(2, '0')
   );
 
+  // Dapatkan tanggal hari ini dengan format YYYY-MM-DD
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const maxDate = `${year}-${month}-${day}`;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl relative">
@@ -149,6 +156,7 @@ export default function AddPakanModal({
               value={tanggal} 
               onChange={(e) => setTanggal(e.target.value)}
               required
+              max={maxDate}
               className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
             />
           </div>

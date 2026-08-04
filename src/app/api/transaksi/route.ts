@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { cookies } from 'next/headers';
-import { getIronSession } from 'iron-session';
-import { sessionOptions, SessionData } from '@/lib/session';
 import { requireEditor } from '@/lib/require-editor';
 
 export async function POST(req: NextRequest) {
@@ -15,35 +12,75 @@ export async function POST(req: NextRequest) {
     }
 
     const { tanggal, jenis, unitUsahaId, keterangan, nominal, buktiFileUrl } = await req.json();
+    const jenisTransaksi = String(jenis);
     const nominalNumber = Number(nominal);
 
     if (!tanggal || !jenis || !unitUsahaId || !keterangan || !nominal) {
       return NextResponse.json({ message: 'Semua field wajib diisi kecuali bukti.' }, { status: 400 });
     }
 
+    if (!['Pemasukan', 'Pengeluaran'].includes(jenisTransaksi)) {
+      return NextResponse.json({ message: 'Jenis transaksi tidak valid.' }, { status: 400 });
+    }
+
     if (!Number.isFinite(nominalNumber) || nominalNumber <= 0) {
       return NextResponse.json({ message: 'Nominal harus lebih dari 0.' }, { status: 400 });
     }
 
-    // Hitung saldo berjalan
-    const saldoResult = await sql`
-      SELECT COALESCE(SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE -nominal END), 0) AS saldo
+    const transaksiEksisting = await sql`
+      SELECT no_transaksi, tanggal, jenis, nominal, created_at
       FROM transaksi
+      ORDER BY tanggal ASC, created_at ASC
     `;
-    const saldoSekarang = Number(saldoResult[0].saldo);
-    const saldoBaru = jenis === 'Pemasukan' ? saldoSekarang + nominalNumber : saldoSekarang - nominalNumber;
 
-    if (saldoBaru < 0) {
-      return NextResponse.json({ message: 'Saldo tidak cukup. Transaksi pengeluaran tidak boleh membuat saldo menjadi minus.' }, { status: 400 });
+    const transaksiSimulasi = [
+      ...transaksiEksisting,
+      {
+        no_transaksi: '__new__',
+        tanggal,
+        jenis: jenisTransaksi,
+        nominal: nominalNumber,
+        created_at: new Date(),
+      },
+    ].sort((a, b) => {
+      const tanggalA = new Date(a.tanggal).getTime();
+      const tanggalB = new Date(b.tanggal).getTime();
+      if (tanggalA !== tanggalB) return tanggalA - tanggalB;
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    });
+
+    let saldoSimulasi = 0;
+    for (const transaksi of transaksiSimulasi) {
+      saldoSimulasi += (transaksi.jenis === 'Pemasukan' || transaksi.jenis === 'saldo_awal')
+        ? Number(transaksi.nominal)
+        : -Number(transaksi.nominal);
+
+      if (saldoSimulasi < 0) {
+        return NextResponse.json({ message: 'Transaksi ini membuat saldo menjadi minus pada urutan buku kas.' }, { status: 400 });
+      }
     }
 
     const result = await sql`
       INSERT INTO transaksi (tanggal, jenis, unit_usaha_id, keterangan, nominal, bukti_file_url, saldosetelahtransaksi, created_by)
-      VALUES (${tanggal}, ${jenis}, ${unitUsahaId}, ${keterangan}, ${nominalNumber}, ${buktiFileUrl || null}, ${saldoBaru}, ${session.userId})
+      VALUES (${tanggal}, ${jenisTransaksi}, ${unitUsahaId}, ${keterangan}, ${nominalNumber}, ${buktiFileUrl || null}, 0, ${session.userId})
       RETURNING no_transaksi
     `;
 
     const noTransaksi = result[0].no_transaksi;
+
+    // Menghitung dan mengupdate saldo berjalan untuk semua baris sekaligus
+    await sql`
+      WITH SaldoBerjalan AS (
+        SELECT no_transaksi,
+               SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE -nominal END) 
+               OVER (ORDER BY tanggal ASC, created_at ASC) as saldo_baru
+        FROM transaksi
+      )
+      UPDATE transaksi
+      SET saldosetelahtransaksi = SaldoBerjalan.saldo_baru
+      FROM SaldoBerjalan
+      WHERE transaksi.no_transaksi = SaldoBerjalan.no_transaksi
+    `;
 
     await sql`
       INSERT INTO log_aktivitas (user_id, no_transaksi, aksi, detail)

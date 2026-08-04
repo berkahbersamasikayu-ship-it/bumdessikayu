@@ -84,6 +84,12 @@ export default function AddPertumbuhanModal({
     }
   };
 
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const maxDate = `${year}-${month}-${day}`;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl relative">
@@ -115,7 +121,7 @@ export default function AddPertumbuhanModal({
 
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Tanggal</label>
-            <input type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)}
+            <input type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} max={maxDate}
               className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>

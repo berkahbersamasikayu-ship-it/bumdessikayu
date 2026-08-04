@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Calendar } from 'lucide-react';
+import { X } from 'lucide-react';
 import CurrencyInput from './CurrencyInput';
 
 interface UnitUsaha { id: string; nama: string; }
@@ -130,7 +130,6 @@ export default function EditTransaksiModal({
                   onChange={(e) => setTanggal(e.target.value)}
                   className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900"
                 />
-                <Calendar className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 

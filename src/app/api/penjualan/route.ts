@@ -74,11 +74,38 @@ export async function POST(req: NextRequest) {
 
     const totalHarga = Number(kuantitas) * Number(hargaPerKg);
 
-    const saldoResult = await sql`
-      SELECT COALESCE(SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE -nominal END), 0) AS saldo
+    const transaksiEksisting = await sql`
+      SELECT no_transaksi, tanggal, jenis, nominal, created_at
       FROM transaksi
+      ORDER BY tanggal ASC, created_at ASC
     `;
-    const saldoBaru = Number(saldoResult[0].saldo) + totalHarga;
+
+    const transaksiSimulasi = [
+      ...transaksiEksisting,
+      {
+        no_transaksi: '__new__',
+        tanggal,
+        jenis: 'Pemasukan',
+        nominal: totalHarga,
+        created_at: new Date(),
+      },
+    ].sort((a, b) => {
+      const tanggalA = new Date(a.tanggal).getTime();
+      const tanggalB = new Date(b.tanggal).getTime();
+      if (tanggalA !== tanggalB) return tanggalA - tanggalB;
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    });
+
+    let saldoSimulasi = 0;
+    for (const transaksi of transaksiSimulasi) {
+      saldoSimulasi += (transaksi.jenis === 'Pemasukan' || transaksi.jenis === 'saldo_awal')
+        ? Number(transaksi.nominal)
+        : -Number(transaksi.nominal);
+
+      if (saldoSimulasi < 0) {
+        return NextResponse.json({ message: 'Penjualan ini membuat saldo menjadi minus pada urutan buku kas.' }, { status: 400 });
+      }
+    }
 
     const unitResult = await sql`SELECT nama FROM unit_usaha WHERE id = ${unitUsahaId}`;
     const namaUnit = unitResult[0]?.nama || 'Unit Usaha';
@@ -88,11 +115,25 @@ export async function POST(req: NextRequest) {
       VALUES (
         ${tanggal}, 'Pemasukan', ${unitUsahaId},
         ${'Penjualan ' + namaUnit + ' - ' + namaPembeli.trim()},
-        ${totalHarga}, ${saldoBaru}, ${session.userId}
+        ${totalHarga}, 0, ${session.userId}
       )
       RETURNING no_transaksi
     `;
     const noTransaksi = trxResult[0].no_transaksi;
+
+    // Menghitung dan mengupdate saldo berjalan untuk semua baris sekaligus
+    await sql`
+      WITH SaldoBerjalan AS (
+        SELECT no_transaksi,
+               SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE -nominal END) 
+               OVER (ORDER BY tanggal ASC, created_at ASC) as saldo_baru
+        FROM transaksi
+      )
+      UPDATE transaksi
+      SET saldosetelahtransaksi = SaldoBerjalan.saldo_baru
+      FROM SaldoBerjalan
+      WHERE transaksi.no_transaksi = SaldoBerjalan.no_transaksi
+    `;
 
     await sql`
       INSERT INTO penjualan (tanggal, unit_usaha_id, nama_pembeli, keterangan, kuantitas, harga_per_kg, total_harga, no_transaksi, created_by)

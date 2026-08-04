@@ -165,6 +165,12 @@ export default function InputTransaksiPage() {
     );
   }
 
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const maxDate = `${year}-${month}-${day}`;
+
   return (
     <div className="flex justify-center">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-4xl">
@@ -186,9 +192,9 @@ export default function InputTransaksiPage() {
                 type="date"
                 value={tanggal}
                 onChange={(e) => setTanggal(e.target.value)}
+                max={maxDate}
                 className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900"
               />
-              <Calendar className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 

@@ -88,6 +88,12 @@ export default function AddPenjualanModal({
     }
   };
 
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const maxDate = `${year}-${month}-${day}`;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl w-full max-w-2xl p-8 shadow-2xl relative">
@@ -112,6 +118,7 @@ export default function AddPenjualanModal({
                   type="date"
                   value={tanggal}
                   onChange={(e) => setTanggal(e.target.value)}
+                  max={maxDate}
                   className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900"
                 />
               </div>
