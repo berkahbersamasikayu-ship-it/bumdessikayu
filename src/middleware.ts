@@ -6,12 +6,18 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const session = await getIronSession<SessionData>(req, res, sessionOptions);
 
-  const isLoginPage = req.nextUrl.pathname === '/login';
-  const isProtectedRoute = !isLoginPage && req.nextUrl.pathname !== '/api/login';
+  if (req.nextUrl.pathname === '/') {
+    if (session.isLoggedIn) {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
 
-  if (!session.isLoggedIn && isProtectedRoute && req.nextUrl.pathname.startsWith('/')) {
-    // Kecualikan API routes dan static assets
-    if (!req.nextUrl.pathname.startsWith('/api') && !req.nextUrl.pathname.startsWith('/_next')) {
+  const isLoginPage = req.nextUrl.pathname === '/login';
+  const isProtectedRoute = !isLoginPage && !req.nextUrl.pathname.startsWith('/api');
+
+  if (!session.isLoggedIn && isProtectedRoute) {
+    if (!req.nextUrl.pathname.startsWith('/_next')) {
       return NextResponse.redirect(new URL('/login', req.url));
     }
   }
@@ -24,5 +30,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|.*\\..*|favicon.ico).*)',],
+  matcher: ['/((?!api|_next/static|_next/image|.*\\..*|favicon.ico).*)'],
 };
