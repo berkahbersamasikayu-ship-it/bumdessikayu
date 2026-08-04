@@ -11,7 +11,11 @@ export async function GET() {
     }
 
     const rows = await sql`
-      SELECT l.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' AS created_at, u.nama AS user_nama, l.aksi, l.detail
+      SELECT 
+        TO_CHAR(l.created_at AT TIME ZONE 'Asia/Jakarta', 'DD/MM/YYYY, HH24:MI') AS created_at,
+        u.nama AS user_nama, 
+        l.aksi, 
+        l.detail
       FROM log_aktivitas l
       JOIN users u ON u.id = l.user_id
       ORDER BY l.created_at DESC
