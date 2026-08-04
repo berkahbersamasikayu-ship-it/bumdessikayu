@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import bcrypt from 'bcryptjs';
-import { cookies } from 'next/headers';
-import { getIronSession } from 'iron-session';
-import { sessionOptions, SessionData } from '@/lib/session';
 import { requireEditor, requireLoggedIn } from '@/lib/require-editor';
 
 export async function GET() {
@@ -15,8 +12,9 @@ export async function GET() {
       return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });
     }
 
+    // [TAMBAHAN]: Memasukkan kolom 'role' ke dalam query SELECT
     const rows = await sql`
-      SELECT id, nama, username, status, created_at
+      SELECT id, nama, username, status, role, created_at
       FROM users
       ORDER BY nama ASC
     `;
@@ -36,9 +34,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });
     }
 
-    const { nama, username, password } = await req.json();
+    // [TAMBAHAN]: Mengambil 'role' dari body request
+    const { nama, username, password, role } = await req.json();
 
-    if (!nama?.trim() || !username?.trim() || !password) {
+    // [TAMBAHAN]: Validasi memastikan 'role' tidak kosong
+    if (!nama?.trim() || !username?.trim() || !password || !role?.trim()) {
       return NextResponse.json({ message: 'Semua field wajib diisi.' }, { status: 400 });
     }
 
@@ -53,15 +53,16 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+    // [PERBAIKAN]: Menambahkan ${role.trim()} ke dalam urutan VALUES
     const result = await sql`
-      INSERT INTO users (nama, username, password, status)
-      VALUES (${nama.trim()}, ${username.trim()}, ${passwordHash}, 'Aktif')
+      INSERT INTO users (nama, username, password, status, role)
+      VALUES (${nama.trim()}, ${username.trim()}, ${passwordHash}, 'Aktif', ${role.trim()})
       RETURNING id, nama
     `;
 
     await sql`
       INSERT INTO log_aktivitas (user_id, aksi, detail)
-      VALUES (${session.userId}, 'tambah_akun', ${'Menambahkan akun "' + result[0].nama + '" (' + username.trim() + ')'})
+      VALUES (${session.userId}, 'tambah_akun', ${'Menambahkan akun "' + result[0].nama + '" (' + username.trim() + ') dengan role ' + role.trim()})
     `;
 
     return NextResponse.json({ message: 'Akun berhasil ditambahkan.' });

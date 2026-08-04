@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { Eye, EyeOff, X } from 'lucide-react';
 
 export default function AddAkunModal({
   open,
@@ -16,6 +16,8 @@ export default function AddAkunModal({
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [konfirmasiPassword, setKonfirmasiPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showKonfirmasiPassword, setShowKonfirmasiPassword] = useState(false);
   const [role, setRole] = useState<'Bumdes' | 'Umum'>('Bumdes');
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -27,6 +29,8 @@ export default function AddAkunModal({
     setUsername('');
     setPassword('');
     setKonfirmasiPassword('');
+    setShowPassword(false);
+    setShowKonfirmasiPassword(false);
     setRole('Bumdes');
     setErrorMessage('');
     onClose();
@@ -113,23 +117,43 @@ export default function AddAkunModal({
             </div>
             <div>
               <label className="block text-sm font-semibold text-black mb-1.5">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Masukkan Password"
-                className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900"
-              />
+              <div className="w-full h-11 rounded-lg border border-gray-300 px-4 flex items-center gap-2 focus-within:ring-2 focus-within:ring-blue-900 focus-within:border-blue-900">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Masukkan Password"
+                  className="w-full border-none outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="text-gray-500 hover:text-blue-900"
+                  aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                >
+                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-semibold text-black mb-1.5">Konfirmasi Password</label>
-              <input
-                type="password"
-                value={konfirmasiPassword}
-                onChange={(e) => setKonfirmasiPassword(e.target.value)}
-                placeholder="Masukkan Ulang Password"
-                className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900"
-              />
+              <div className="w-full h-11 rounded-lg border border-gray-300 px-4 flex items-center gap-2 focus-within:ring-2 focus-within:ring-blue-900 focus-within:border-blue-900">
+                <input
+                  type={showKonfirmasiPassword ? 'text' : 'password'}
+                  value={konfirmasiPassword}
+                  onChange={(e) => setKonfirmasiPassword(e.target.value)}
+                  placeholder="Masukkan Ulang Password"
+                  className="w-full border-none outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKonfirmasiPassword((prev) => !prev)}
+                  className="text-gray-500 hover:text-blue-900"
+                  aria-label={showKonfirmasiPassword ? 'Sembunyikan konfirmasi password' : 'Tampilkan konfirmasi password'}
+                >
+                  {showKonfirmasiPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+              </div>
             </div>
           </div>
 

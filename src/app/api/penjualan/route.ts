@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     const totalHarga = Number(kuantitas) * Number(hargaPerKg);
 
     const saldoResult = await sql`
-      SELECT COALESCE(SUM(CASE WHEN jenis='Pemasukan' THEN nominal ELSE -nominal END), 0) AS saldo
+      SELECT COALESCE(SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE -nominal END), 0) AS saldo
       FROM transaksi
     `;
     const saldoBaru = Number(saldoResult[0].saldo) + totalHarga;

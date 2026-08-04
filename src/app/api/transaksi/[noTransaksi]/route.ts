@@ -53,12 +53,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ no
     }
 
     const { tanggal, jenis, unitUsahaId, keterangan, nominal, buktiFileUrl } = await req.json();
+    const nominalNumber = Number(nominal);
 
     if (!tanggal || !jenis || !unitUsahaId || !keterangan || !nominal) {
       return NextResponse.json({ message: 'Semua field wajib diisi kecuali bukti.' }, { status: 400 });
     }
 
-    if (Number(nominal) <= 0) {
+    if (!Number.isFinite(nominalNumber) || nominalNumber <= 0) {
       return NextResponse.json({ message: 'Nominal harus lebih dari 0.' }, { status: 400 });
     }
 
@@ -70,24 +71,41 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ no
     }
     const old = oldResult[0];
 
-    await sql`
-      UPDATE transaksi
-      SET tanggal = ${tanggal}, jenis = ${jenis}, unit_usaha_id = ${unitUsahaId},
-          keterangan = ${keterangan}, nominal = ${nominal},
-          bukti_file_url = ${buktiFileUrl !== undefined ? buktiFileUrl : sql`bukti_file_url`},
-          updated_at = now()
-      WHERE no_transaksi = ${noTransaksi}
-    `;
-
     const semuaTransaksi = await sql`
       SELECT no_transaksi, jenis, nominal
       FROM transaksi
       ORDER BY tanggal ASC, created_at ASC
     `;
 
+    const transaksiSimulasi = semuaTransaksi.map((t) =>
+      t.no_transaksi === noTransaksi
+        ? { ...t, jenis, nominal: nominalNumber }
+        : t
+    );
+
+    let saldoSimulasi = 0;
+    for (const t of transaksiSimulasi) {
+      saldoSimulasi += (t.jenis === 'Pemasukan' || t.jenis === 'saldo_awal')
+        ? Number(t.nominal)
+        : -Number(t.nominal);
+
+      if (saldoSimulasi < 0) {
+        return NextResponse.json({ message: 'Perubahan ini akan membuat saldo menjadi minus, jadi tidak bisa disimpan.' }, { status: 400 });
+      }
+    }
+
+    await sql`
+      UPDATE transaksi
+      SET tanggal = ${tanggal}, jenis = ${jenis}, unit_usaha_id = ${unitUsahaId},
+          keterangan = ${keterangan}, nominal = ${nominalNumber},
+          bukti_file_url = ${buktiFileUrl !== undefined ? buktiFileUrl : sql`bukti_file_url`},
+          updated_at = now()
+      WHERE no_transaksi = ${noTransaksi}
+    `;
+
     let saldoBerjalan = 0;
     for (const t of semuaTransaksi) {
-      saldoBerjalan += t.jenis === 'Pemasukan' ? Number(t.nominal) : -Number(t.nominal);
+      saldoBerjalan += (t.jenis === 'Pemasukan' || t.jenis === 'saldo_awal') ? Number(t.nominal) : -Number(t.nominal);
       await sql`
         UPDATE transaksi SET saldosetelahtransaksi = ${saldoBerjalan} WHERE no_transaksi = ${t.no_transaksi}
       `;
@@ -95,7 +113,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ no
 
     const perubahan: string[] = [];
     if (Number(old.nominal) !== Number(nominal)) {
-      perubahan.push(`nominal Rp${Number(old.nominal).toLocaleString('id-ID')} → Rp${Number(nominal).toLocaleString('id-ID')}`);
+      perubahan.push(`nominal Rp${Number(old.nominal).toLocaleString('id-ID')} → Rp${nominalNumber.toLocaleString('id-ID')}`);
     }
     if (old.jenis !== jenis) {
       perubahan.push(`jenis ${old.jenis} → ${jenis}`);

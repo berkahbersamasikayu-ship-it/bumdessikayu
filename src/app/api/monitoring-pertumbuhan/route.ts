@@ -60,9 +60,20 @@ export async function POST(req: NextRequest) {
     }
 
     const { kolamId, tanggal, beratRataRata, panjangRataRata, jumlahIkanMati } = await req.json();
+    const beratRataRataNumber = Number(beratRataRata);
+    const panjangRataRataNumber = panjangRataRata === undefined || panjangRataRata === null || panjangRataRata === '' ? null : Number(panjangRataRata);
+    const jumlahIkanMatiNumber = jumlahIkanMati === undefined || jumlahIkanMati === null || jumlahIkanMati === '' ? 0 : Number(jumlahIkanMati);
 
     if (!kolamId || !tanggal || !beratRataRata) {
       return NextResponse.json({ message: 'Field wajib belum lengkap.' }, { status: 400 });
+    }
+
+    if (
+      !Number.isFinite(beratRataRataNumber) || beratRataRataNumber < 0 ||
+      (panjangRataRataNumber !== null && (!Number.isFinite(panjangRataRataNumber) || panjangRataRataNumber < 0)) ||
+      !Number.isFinite(jumlahIkanMatiNumber) || jumlahIkanMatiNumber < 0
+    ) {
+      return NextResponse.json({ message: 'Angka tidak boleh bernilai minus.' }, { status: 400 });
     }
 
     const kolamResult = await sql`SELECT jumlah_benih FROM kolam WHERE id = ${kolamId}`;
@@ -78,7 +89,7 @@ export async function POST(req: NextRequest) {
 
     const jumlahBenih = Number(kolamResult[0].jumlah_benih);
     const matiSebelumnya = Number(matiSebelumnyaResult[0].total_mati);
-    const matiSekarang = Number(jumlahIkanMati) || 0;
+    const matiSekarang = jumlahIkanMatiNumber;
     const jumlahIkanHidupSaatIni = jumlahBenih - matiSebelumnya - matiSekarang;
 
     if (jumlahIkanHidupSaatIni < 0) {
@@ -89,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     await sql`
       INSERT INTO monitoring_pertumbuhan (kolam_id, tanggal, berat_rata_rata, panjang_rata_rata, jumlah_ikan_mati, biomassa, created_by)
-      VALUES (${kolamId}, ${tanggal}, ${beratRataRata}, ${panjangRataRata || null}, ${matiSekarang}, ${biomassa}, ${session.userId})
+      VALUES (${kolamId}, ${tanggal}, ${beratRataRataNumber}, ${panjangRataRataNumber}, ${matiSekarang}, ${biomassa}, ${session.userId})
     `;
 
     await sql`

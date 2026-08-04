@@ -11,7 +11,7 @@ export async function GET() {
     }
 
     const rows = await sql`
-      SELECT l.created_at, u.nama AS user_nama, l.aksi, l.detail
+      SELECT l.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' AS created_at, u.nama AS user_nama, l.aksi, l.detail
       FROM log_aktivitas l
       JOIN users u ON u.id = l.user_id
       ORDER BY l.created_at DESC
@@ -31,6 +31,11 @@ export async function GET() {
       nonaktifkan_akun: 'Nonaktifkan Akun',
       tambah_penjualan: 'Tambah Penjualan',
       tambah_monitoring_greenhouse: 'Monitoring Greenhouse',
+      tambah_monitoring_pakan: 'Monitoring Pakan',
+      tambah_monitoring_pertumbuhan: 'Monitoring Pertumbuhan',
+      tambah_kolam: 'Tambah Kolam',
+      edit_kolam: 'Edit Kolam',
+      tambah_monitoring_kualitas: "Monitoring Kualitas"
     };
 
     return NextResponse.json(

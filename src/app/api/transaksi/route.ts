@@ -15,26 +15,31 @@ export async function POST(req: NextRequest) {
     }
 
     const { tanggal, jenis, unitUsahaId, keterangan, nominal, buktiFileUrl } = await req.json();
+    const nominalNumber = Number(nominal);
 
     if (!tanggal || !jenis || !unitUsahaId || !keterangan || !nominal) {
       return NextResponse.json({ message: 'Semua field wajib diisi kecuali bukti.' }, { status: 400 });
     }
 
-    if (Number(nominal) <= 0) {
+    if (!Number.isFinite(nominalNumber) || nominalNumber <= 0) {
       return NextResponse.json({ message: 'Nominal harus lebih dari 0.' }, { status: 400 });
     }
 
     // Hitung saldo berjalan
     const saldoResult = await sql`
-      SELECT COALESCE(SUM(CASE WHEN jenis='Pemasukan' THEN nominal ELSE -nominal END), 0) AS saldo
+      SELECT COALESCE(SUM(CASE WHEN jenis IN ('Pemasukan', 'saldo_awal') THEN nominal ELSE -nominal END), 0) AS saldo
       FROM transaksi
     `;
     const saldoSekarang = Number(saldoResult[0].saldo);
-    const saldoBaru = jenis === 'Pemasukan' ? saldoSekarang + Number(nominal) : saldoSekarang - Number(nominal);
+    const saldoBaru = jenis === 'Pemasukan' ? saldoSekarang + nominalNumber : saldoSekarang - nominalNumber;
+
+    if (saldoBaru < 0) {
+      return NextResponse.json({ message: 'Saldo tidak cukup. Transaksi pengeluaran tidak boleh membuat saldo menjadi minus.' }, { status: 400 });
+    }
 
     const result = await sql`
       INSERT INTO transaksi (tanggal, jenis, unit_usaha_id, keterangan, nominal, bukti_file_url, saldosetelahtransaksi, created_by)
-      VALUES (${tanggal}, ${jenis}, ${unitUsahaId}, ${keterangan}, ${nominal}, ${buktiFileUrl || null}, ${saldoBaru}, ${session.userId})
+      VALUES (${tanggal}, ${jenis}, ${unitUsahaId}, ${keterangan}, ${nominalNumber}, ${buktiFileUrl || null}, ${saldoBaru}, ${session.userId})
       RETURNING no_transaksi
     `;
 
@@ -46,7 +51,7 @@ export async function POST(req: NextRequest) {
         ${session.userId},
         ${noTransaksi},
         'tambah_transaksi',
-        ${'Menambahkan ' + noTransaksi + ' (' + keterangan + ', Rp' + Number(nominal).toLocaleString('id-ID') + ')'}
+        ${'Menambahkan ' + noTransaksi + ' (' + keterangan + ', Rp' + nominalNumber.toLocaleString('id-ID') + ')'}
       )
     `;
 

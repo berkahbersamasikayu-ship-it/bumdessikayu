@@ -45,6 +45,10 @@ export async function POST(req: NextRequest) {
       hamaPenyakit, pemupukan, pembungaanPembuahan, tindakan,
     } = await req.json();
 
+    if (tanggal && !/^\d{4}-\d{2}-\d{2}$/.test(tanggal)) {
+      return NextResponse.json({ message: 'Format tanggal tidak valid.' }, { status: 400 });
+    }
+
     if (!tanggal || !kondisiGh || !irigasiTetes || !kondisiTanaman || !hamaPenyakit || !pemupukan || !pembungaanPembuahan) {
       return NextResponse.json({ message: 'Semua field wajib diisi kecuali tindakan.' }, { status: 400 });
     }

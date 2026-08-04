@@ -20,7 +20,7 @@ export async function GET() {
         u.id,
         u.nama,
         u.status,
-        COALESCE(SUM(CASE WHEN t.jenis='Pemasukan' THEN t.nominal ELSE -t.nominal END), 0) AS saldo
+        COALESCE(SUM(CASE WHEN t.jenis IN ('Pemasukan', 'saldo_awal') THEN t.nominal ELSE -t.nominal END), 0) AS saldo
       FROM unit_usaha u
       LEFT JOIN transaksi t ON t.unit_usaha_id = u.id
       GROUP BY u.id, u.nama, u.status

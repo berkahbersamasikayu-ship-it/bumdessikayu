@@ -42,6 +42,11 @@ export default function AddKualitasModal({
       return;
     }
 
+    if ((Number(suhuAir) || 0) < 0 || (Number(ph) || 0) < 0 || (Number(doLevel) || 0) < 0 || (Number(amonia) || 0) < 0) {
+      setErrorMessage('Angka tidak boleh bernilai minus.');
+      return;
+    }
+
     setIsSaving(true);
     try {
       const res = await fetch('/api/monitoring-kualitas', {
@@ -79,7 +84,7 @@ export default function AddKualitasModal({
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Kolam</label>
             <select value={kolamId} onChange={(e) => setKolamId(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900">
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900">
               <option value="">Pilih Kolam</option>
               {kolamList.map((k) => <option key={k.id} value={k.id}>{k.nama_kolam}</option>)}
             </select>
@@ -87,32 +92,36 @@ export default function AddKualitasModal({
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Tanggal</label>
             <input type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Suhu Air (°C)</label>
             <input type="number" step="0.1" value={suhuAir} onChange={(e) => setSuhuAir(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              min="0"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">pH</label>
             <input type="number" step="0.1" value={ph} onChange={(e) => setPh(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              min="0"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">DO (opsional)</label>
             <input type="number" step="0.1" value={doLevel} onChange={(e) => setDoLevel(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              min="0"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Amonia (opsional)</label>
             <input type="number" step="0.001" value={amonia} onChange={(e) => setAmonia(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              min="0"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Kondisi Ikan</label>
             <select value={kondisiIkan} onChange={(e) => setKondisiIkan(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900">
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900">
               <option value="">Pilih Kondisi</option>
               <option value="Sehat">Sehat</option>
               <option value="Waspada">Waspada</option>
@@ -122,7 +131,7 @@ export default function AddKualitasModal({
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Nafsu Makan</label>
             <select value={nafsuMakan} onChange={(e) => setNafsuMakan(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900">
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900">
               <option value="">Pilih Nafsu Makan</option>
               <option value="Baik">Baik</option>
               <option value="Menurun">Menurun</option>

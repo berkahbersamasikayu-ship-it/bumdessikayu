@@ -45,14 +45,20 @@ export async function POST(req: NextRequest) {
     }
 
     const { kolamId, tanggal, jenisPakan, jumlahPakan, jamPemberian, sisaPakan } = await req.json();
+    const jumlahPakanNumber = Number(jumlahPakan);
+    const sisaPakanNumber = sisaPakan === undefined || sisaPakan === null || sisaPakan === '' ? 0 : Number(sisaPakan);
 
     if (!kolamId || !tanggal || !jenisPakan || !jumlahPakan) {
       return NextResponse.json({ message: 'Field wajib belum lengkap.' }, { status: 400 });
     }
 
+    if (!Number.isFinite(jumlahPakanNumber) || jumlahPakanNumber < 0 || !Number.isFinite(sisaPakanNumber) || sisaPakanNumber < 0) {
+      return NextResponse.json({ message: 'Angka tidak boleh bernilai minus.' }, { status: 400 });
+    }
+
     await sql`
       INSERT INTO monitoring_pakan (kolam_id, tanggal, jam_pemberian, jenis_pakan, jumlah_pakan, sisa_pakan, created_by)
-      VALUES (${kolamId}, ${tanggal}, ${jamPemberian || null}, ${jenisPakan}, ${jumlahPakan}, ${sisaPakan || 0}, ${session.userId})
+      VALUES (${kolamId}, ${tanggal}, ${jamPemberian || null}, ${jenisPakan}, ${jumlahPakanNumber}, ${sisaPakanNumber}, ${session.userId})
     `;
 
     await sql`

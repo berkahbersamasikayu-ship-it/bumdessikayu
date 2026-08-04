@@ -33,6 +33,11 @@ export default function AddKolamModal({
       return;
     }
 
+    if ((Number(luasKolam) || 0) < 0 || (Number(jumlahBenih) || 0) < 0 || (Number(bobotRataRataAwal) || 0) < 0) {
+      setErrorMessage('Angka tidak boleh bernilai minus.');
+      return;
+    }
+
     setIsSaving(true);
     try {
       const res = await fetch('/api/kolam', {
@@ -70,27 +75,30 @@ export default function AddKolamModal({
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Nama Kolam</label>
             <input value={namaKolam} onChange={(e) => setNamaKolam(e.target.value)} placeholder="Contoh: Kolam A1"
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Luas Kolam (m²)</label>
             <input type="number" value={luasKolam} onChange={(e) => setLuasKolam(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              min="0"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Tanggal Tebar</label>
             <input type="date" value={tanggalTebar} onChange={(e) => setTanggalTebar(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Jumlah Benih (ekor)</label>
             <input type="number" value={jumlahBenih} onChange={(e) => setJumlahBenih(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              min="0"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Bobot Rata-rata Awal (gram)</label>
             <input type="number" value={bobotRataRataAwal} onChange={(e) => setBobotRataRataAwal(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              min="0"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
 
           {biomassaAwal > 0 && (

@@ -64,6 +64,11 @@ export default function AddPakanModal({
       return;
     }
 
+    if ((Number(jumlahPakan) || 0) < 0 || (Number(sisaPakan) || 0) < 0) {
+      setErrorMessage('Angka tidak boleh bernilai minus.');
+      return;
+    }
+
     setIsSaving(true);
     try {
       // Menggabungkan jam dan menit menjadi satu string "HH:mm" sebelum dikirim ke API
@@ -128,7 +133,7 @@ export default function AddPakanModal({
               value={kolamId} 
               onChange={(e) => setKolamId(e.target.value)}
               required
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
             >
               <option value="">Pilih Kolam</option>
               {kolamList.map((k) => (
@@ -144,7 +149,7 @@ export default function AddPakanModal({
               value={tanggal} 
               onChange={(e) => setTanggal(e.target.value)}
               required
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" 
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
             />
           </div>
           
@@ -154,7 +159,7 @@ export default function AddPakanModal({
               value={jenisPakan} 
               onChange={(e) => setJenisPakan(e.target.value)}
               required
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
             >
               <option value="">Pilih Jenis Pakan</option>
               <option value="Pelet">Pelet</option>
@@ -171,7 +176,7 @@ export default function AddPakanModal({
               value={jumlahPakan} 
               onChange={(e) => setJumlahPakan(e.target.value)}
               required
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" 
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
             />
           </div>
           
@@ -182,7 +187,7 @@ export default function AddPakanModal({
                 value={jam} 
                 onChange={(e) => setJam(e.target.value)}
                 required
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
               >
                 <option value="">Jam</option>
                 {hoursOptions.map((h) => (
@@ -194,7 +199,7 @@ export default function AddPakanModal({
                 value={menit} 
                 onChange={(e) => setMenit(e.target.value)}
                 required
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
               >
                 <option value="">Menit</option>
                 {minutesOptions.map((m) => (
@@ -212,7 +217,7 @@ export default function AddPakanModal({
               min="0" 
               value={sisaPakan} 
               onChange={(e) => setSisaPakan(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" 
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-900" 
             />
           </div>
 

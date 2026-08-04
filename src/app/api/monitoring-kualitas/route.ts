@@ -45,14 +45,27 @@ export async function POST(req: NextRequest) {
     }
 
     const { kolamId, tanggal, suhuAir, ph, doLevel, amonia, kondisiIkan, nafsuMakan } = await req.json();
+    const suhuAirNumber = suhuAir === undefined || suhuAir === null || suhuAir === '' ? null : Number(suhuAir);
+    const phNumber = ph === undefined || ph === null || ph === '' ? null : Number(ph);
+    const doLevelNumber = doLevel === undefined || doLevel === null || doLevel === '' ? null : Number(doLevel);
+    const amoniaNumber = amonia === undefined || amonia === null || amonia === '' ? null : Number(amonia);
 
     if (!kolamId || !tanggal) {
       return NextResponse.json({ message: 'Field wajib belum lengkap.' }, { status: 400 });
     }
 
+    if (
+      (suhuAirNumber !== null && (!Number.isFinite(suhuAirNumber) || suhuAirNumber < 0)) ||
+      (phNumber !== null && (!Number.isFinite(phNumber) || phNumber < 0)) ||
+      (doLevelNumber !== null && (!Number.isFinite(doLevelNumber) || doLevelNumber < 0)) ||
+      (amoniaNumber !== null && (!Number.isFinite(amoniaNumber) || amoniaNumber < 0))
+    ) {
+      return NextResponse.json({ message: 'Angka tidak boleh bernilai minus.' }, { status: 400 });
+    }
+
     await sql`
       INSERT INTO monitoring_kualitas (kolam_id, tanggal, suhu_air, ph, do_level, amonia, kondisi_ikan, nafsu_makan, created_by)
-      VALUES (${kolamId}, ${tanggal}, ${suhuAir || null}, ${ph || null}, ${doLevel || null}, ${amonia || null}, ${kondisiIkan || null}, ${nafsuMakan || null}, ${session.userId})
+      VALUES (${kolamId}, ${tanggal}, ${suhuAirNumber}, ${phNumber}, ${doLevelNumber}, ${amoniaNumber}, ${kondisiIkan || null}, ${nafsuMakan || null}, ${session.userId})
     `;
 
     await sql`
