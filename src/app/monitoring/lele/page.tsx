@@ -41,9 +41,18 @@ export default function MonitoringLelePage() {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
       const res = await fetch(`${endpointMap[tab]}?${params.toString()}`);
-      setData(await res.json());
+      const payload = await res.json();
+
+      if (!res.ok || !Array.isArray(payload)) {
+        console.error('Gagal memuat data monitoring:', payload);
+        setData([]);
+        return;
+      }
+
+      setData(payload);
     } catch (err) {
       console.error(err);
+      setData([]);
     } finally {
       setIsLoading(false);
     }
@@ -235,7 +244,7 @@ export default function MonitoringLelePage() {
                       <td className="p-3 border border-gray-200 text-base">{p.panjangRataRata ? p.panjangRataRata + ' cm' : '-'}</td>
                       <td className="p-3 border border-gray-200 text-base text-red-600 text-center">{p.jumlahIkanMati} ekor</td>
                       <td className="p-3 border border-gray-200 text-base text-center">{p.jumlahIkanHidup} ekor</td>
-                      <td className="p-3 border border-gray-200 text-base font-semibold text-green-700 text-right">{p.biomassa.toFixed(2)} kg</td>
+                      <td className="p-3 border border-gray-200 text-base font-semibold text-green-700 text-right">{Number(p.biomassa ?? 0).toFixed(2)} kg</td>
                     </tr>
                   ))
                 )}
