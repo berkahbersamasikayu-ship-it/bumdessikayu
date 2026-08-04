@@ -95,7 +95,7 @@ export default function MonitoringLelePage() {
           <option value="kualitas">Monitoring Kualitas Budidaya</option>
         </select>
 
-        <div className="flex w-full md:w-auto items-center gap-3">
+        <div className="flex flex-col w-full md:w-auto items-center gap-3">
           <div className="relative w-full md:w-auto">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
