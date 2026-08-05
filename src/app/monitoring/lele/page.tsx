@@ -118,7 +118,7 @@ export default function MonitoringLelePage() {
               onClick={() => handleExport('pdf')}
               className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800"
             >
-              <FileText size={16} /> <span className="hidden sm:inline">Export PDF</span>
+              <FileText size={16} />Export PDF
             </button>
 
             {!isViewer && (

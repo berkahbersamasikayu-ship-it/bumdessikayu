@@ -1,10 +1,9 @@
+// src/app/(dashboard)/monitoring/greenhouse/page.tsx
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Search } from 'lucide-react';
+import { Search, FileSpreadsheet, FileText } from 'lucide-react'; // Ditambahkan icon FileSpreadsheet & FileText
 import AddGreenhouseModal from '../../components/ui/monitoring/AddGreenhouseModal';
-import { useCurrentUser } from '@/lib/useCurrentUser';
-import { FileSpreadsheet, FileText } from 'lucide-react';
 
 interface GreenhouseRow {
   id: string;
@@ -36,7 +35,6 @@ const labelMap: Record<string, string> = {
 };
 
 export default function MonitoringGreenhousePage() {
-  const { isViewer } = useCurrentUser();
   const [search, setSearch] = useState('');
   const [data, setData] = useState<GreenhouseRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,6 +67,7 @@ export default function MonitoringGreenhousePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
+  // Fungsi export ditambahkan
   const handleExport = (format: 'excel' | 'pdf') => {
     window.open(`/api/monitoring-greenhouse/export?format=${format}`, '_blank');
   };
@@ -78,33 +77,42 @@ export default function MonitoringGreenhousePage() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-black">Monitoring Greenhouse</h1>
 
-        <div className="flex w-full md:w-auto items-center gap-3">
+        {/* Wrapper diubah menjadi flex-col di mobile, flex-row di desktop */}
+        <div className="flex flex-col md:flex-row w-full md:w-auto items-start md:items-center gap-3">
           <div className="relative w-full md:w-auto">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari catatan tindakan..."
+              placeholder="Cari..."
               className="h-11 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-900"
             />
           </div>
 
-          <button onClick={() => handleExport('excel')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700">
-            <FileSpreadsheet size={16} /> Export Excel
-          </button>
-          <button onClick={() => handleExport('pdf')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800">
-            <FileText size={16} /> Export PDF
-          </button>
-
-          {!isViewer && (
+          {/* Ketiga tombol dijadikan satu baris (flex-row) */}
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <button
+              onClick={() => handleExport('excel')}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 h-11 px-3 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700"
+              title="Export Excel"
+            >
+              <FileSpreadsheet size={16} />Export Excel
+            </button>
+            <button
+              onClick={() => handleExport('pdf')}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 h-11 px-3 rounded-lg bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800"
+              title="Export PDF"
+            >
+              <FileText size={16} />Export PDF
+            </button>
             <button
               onClick={() => setShowModal(true)}
-              className="h-11 px-6 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors shrink-0"
+              className="flex-1 md:flex-none flex items-center justify-center h-11 px-4 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors whitespace-nowrap"
             >
               Tambah Data
             </button>
-          )}
+          </div>
         </div>
       </div>
 
@@ -112,14 +120,14 @@ export default function MonitoringGreenhousePage() {
         <table className="w-full text-left border-collapse border border-gray-200">
           <thead>
             <tr className="bg-green-700 text-white">
-              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Tanggal</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Kondisi GH</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Irigasi Tetes</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Kondisi Tanaman</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Hama/Penyakit</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Pemupukan</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Pembungaan/Pembuahan</th>
-              <th className="p-3 border border-gray-200 text-sm font-semibold text-center">Tindakan yang Dilakukan</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Minggu/Tanggal</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Kondisi GH</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Irigasi Tetes</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Kondisi Tanaman</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Hama/Penyakit</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Pemupukan</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Pembungaan/Pembuahan</th>
+              <th className="p-3 border border-gray-200 text-sm font-semibold">Tindakan yang Dilakukan</th>
             </tr>
           </thead>
           <tbody>
@@ -145,7 +153,7 @@ export default function MonitoringGreenhousePage() {
         </table>
       </div>
 
-      {!isViewer && <AddGreenhouseModal open={showModal} onClose={() => setShowModal(false)} onSuccess={fetchData} />}
+      <AddGreenhouseModal open={showModal} onClose={() => setShowModal(false)} onSuccess={fetchData} />
     </div>
   );
 }
