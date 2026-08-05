@@ -22,7 +22,7 @@ export default function AddKualitasModal({
 
   useEffect(() => {
     if (open) {
-      fetch('/api/kolam').then((res) => res.json()).then(setKolamList).catch(console.error);
+      fetch('/api/kolam/dropdown').then((res) => res.json()).then(setKolamList).catch(console.error);
     }
   }, [open]);
 

@@ -33,7 +33,7 @@ export default function AddPakanModal({
 
   useEffect(() => {
     if (open) {
-      fetch('/api/kolam')
+      fetch('/api/kolam/dropdown')
         .then((res) => res.json())
         .then(setKolamList)
         .catch(console.error);

@@ -113,7 +113,7 @@ export default function DataPenjualanPage() {
           {!isViewer && (
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-6 py-2.5 rounded-full bg-blue-800 text-white text-sm font-semibold hover:bg-green-800 transition-colors"
+              className="px-6 py-2.5 rounded-full bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 transition-colors"
             >
               Tambah Data
             </button>
