@@ -22,9 +22,15 @@ export async function sendArsipEmail({
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
   ];
 
-  const tujuan = process.env.ARSIP_EMAIL_TUJUAN;
-  if (!tujuan) {
-    throw new Error('ARSIP_EMAIL_TUJUAN belum diatur di environment variable.');
+  const emailTujuanString = process.env.ARSIP_EMAIL_TUJUAN || '';
+  
+  const tujuan = emailTujuanString
+    .split(',')
+    .map(email => email.trim())
+    .filter(email => email !== '');
+
+  if (tujuan.length === 0) {
+    throw new Error('ARSIP_EMAIL_TUJUAN belum diatur atau kosong di environment variable.');
   }
 
   const { data, error } = await resend.emails.send({
