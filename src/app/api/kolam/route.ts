@@ -5,6 +5,9 @@ import { getIronSession } from 'iron-session';
 import { sessionOptions, SessionData } from '@/lib/session';
 import { requireLoggedIn } from '@/lib/require-editor';
 
+// Memaksa Next.js untuk tidak melakukan cache pada endpoint API ini
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const { error, session } = await requireLoggedIn();
@@ -14,16 +17,21 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'Sesi tidak valid.' }, { status: 401 });
     }
     
-    const { searchParams } = new URL(req.url);
-    const search = searchParams.get('search') || '';
+    // Menggunakan req.nextUrl untuk parsing parameter dengan aman
+    const search = req.nextUrl.searchParams.get('search') || '';
 
+    // Menggabungkan wildcard ILIKE langsung di SQL dengan operator ||
     const rows = await sql`
       SELECT id, nama_kolam, luas_kolam, tanggal_tebar, jumlah_benih,
         bobot_rata_rata_awal, biomassa_awal, status
       FROM kolam
-      WHERE status = 'Aktif' AND nama_kolam ILIKE ${'%' + search + '%'}
+      WHERE status = 'Aktif' 
+      AND nama_kolam ILIKE '%' || ${search} || '%'
       ORDER BY id ASC
     `;
+    
+    // Catatan: Jika kamu menggunakan @vercel/postgres atau pg standar, 
+    // ubah baris di bawah menjadi: return NextResponse.json(rows.rows);
     return NextResponse.json(rows);
   } catch (error) {
     console.error('Kolam GET error:', error);
