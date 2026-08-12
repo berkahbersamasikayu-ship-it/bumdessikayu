@@ -10,8 +10,16 @@ export async function sendArsipPakanEmail({
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
   ];
 
-  const tujuan = process.env.ARSIP_EMAIL_TUJUAN;
-  if (!tujuan) throw new Error('ARSIP_EMAIL_TUJUAN belum diatur.');
+  const emailTujuanString = process.env.ARSIP_EMAIL_TUJUAN || '';
+  
+  const tujuan = emailTujuanString
+    .split(',')
+    .map(email => email.trim())
+    .filter(email => email !== '');
+
+  if (tujuan.length === 0) {
+    throw new Error('ARSIP_EMAIL_TUJUAN belum diatur atau kosong di environment variable.');
+  }
 
   const { error } = await resend.emails.send({
     from: 'BUMDes Sikayu <onboarding@resend.dev>',

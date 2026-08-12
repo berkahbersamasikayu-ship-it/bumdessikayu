@@ -107,7 +107,6 @@ export default function BukuKasPage() {
 
   return (
     <div>
-      {/* Filter - Diubah menggunakan flex justify-between agar tombol ke kanan */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-end gap-4">
           <div className="w-full sm:w-auto">
