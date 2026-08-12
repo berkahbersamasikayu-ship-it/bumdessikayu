@@ -74,11 +74,11 @@ export default function AddKualitasModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl relative">
+      <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <button onClick={resetAndClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
           <X size={20} />
         </button>
-        <h3 className="text-lg font-bold text-black mb-5">Tambah Data Monitoring Kualitas Budidaya</h3>
+        <h3 className="text-lg font-bold text-black mb-5 mt-2">Tambah Data Monitoring Kualitas Budidaya</h3>
 
         {errorMessage && (
           <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-2">
