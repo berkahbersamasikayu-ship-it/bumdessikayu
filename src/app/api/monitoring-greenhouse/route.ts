@@ -26,13 +26,13 @@ export async function GET(req: NextRequest) {
         pemupukan, pembungaan_pembuahan, tindakan
       FROM monitoring_greenhouse
       WHERE ${search} = '' 
-         OR kondisi_gh ILIKE '%' || ${search} || '%'
-         OR irigasi_tetes ILIKE '%' || ${search} || '%'
-         OR kondisi_tanaman ILIKE '%' || ${search} || '%'
-         OR hama_penyakit ILIKE '%' || ${search} || '%'
-         OR pemupukan ILIKE '%' || ${search} || '%'
-         OR pembungaan_pembuahan ILIKE '%' || ${search} || '%'
-         OR tindakan ILIKE '%' || ${search} || '%'
+         OR kondisi_gh::text ILIKE '%' || ${search} || '%'
+         OR irigasi_tetes::text ILIKE '%' || ${search} || '%'
+         OR kondisi_tanaman::text ILIKE '%' || ${search} || '%'
+         OR hama_penyakit::text ILIKE '%' || ${search} || '%'
+         OR pemupukan::text ILIKE '%' || ${search} || '%'
+         OR pembungaan_pembuahan::text ILIKE '%' || ${search} || '%'
+         OR tindakan::text ILIKE '%' || ${search} || '%'
       ORDER BY tanggal DESC, created_at DESC
     `;
     
