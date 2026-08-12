@@ -2,8 +2,9 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Search, FileSpreadsheet, FileText } from 'lucide-react'; // Ditambahkan icon FileSpreadsheet & FileText
+import { Search, FileSpreadsheet, FileText } from 'lucide-react';
 import AddGreenhouseModal from '../../components/ui/monitoring/AddGreenhouseModal';
+import { useCurrentUser } from '@/lib/useCurrentUser'; // 1. Import hook useCurrentUser
 
 interface GreenhouseRow {
   id: string;
@@ -35,6 +36,7 @@ const labelMap: Record<string, string> = {
 };
 
 export default function MonitoringGreenhousePage() {
+  const { isViewer } = useCurrentUser(); // 2. Panggil hook untuk mengecek role
   const [search, setSearch] = useState('');
   const [data, setData] = useState<GreenhouseRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,7 +69,6 @@ export default function MonitoringGreenhousePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  // Fungsi export ditambahkan
   const handleExport = (format: 'excel' | 'pdf') => {
     window.open(`/api/monitoring-greenhouse/export?format=${format}`, '_blank');
   };
@@ -77,7 +78,6 @@ export default function MonitoringGreenhousePage() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-black">Monitoring Greenhouse</h1>
 
-        {/* Wrapper diubah menjadi flex-col di mobile, flex-row di desktop */}
         <div className="flex flex-col md:flex-row w-full md:w-auto items-start md:items-center gap-3">
           <div className="relative w-full md:w-auto">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -86,11 +86,10 @@ export default function MonitoringGreenhousePage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari..."
-              className="h-11 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="h-11 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-900 text-gray-900 placeholder-gray-500"
             />
           </div>
 
-          {/* Ketiga tombol dijadikan satu baris (flex-row) */}
           <div className="flex items-center gap-2 w-full md:w-auto">
             <button
               onClick={() => handleExport('excel')}
@@ -106,12 +105,16 @@ export default function MonitoringGreenhousePage() {
             >
               <FileText size={16} />Export PDF
             </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex-1 md:flex-none flex items-center justify-center h-11 px-4 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors whitespace-nowrap"
-            >
-              Tambah Data
-            </button>
+            
+            {/* 3. Sembunyikan tombol Tambah Data jika rolenya adalah Viewer */}
+            {!isViewer && (
+              <button
+                onClick={() => setShowModal(true)}
+                className="flex-1 md:flex-none flex items-center justify-center h-11 px-4 rounded-lg bg-green-700 text-white font-semibold text-sm hover:bg-green-800 transition-colors whitespace-nowrap"
+              >
+                Tambah Data
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -139,12 +142,14 @@ export default function MonitoringGreenhousePage() {
               data.map((row) => (
                 <tr key={row.id} className="odd:bg-white even:bg-gray-50 text-gray-800 hover:bg-green-50 transition-colors">
                   <td className="p-3 border border-gray-200 text-base font-medium">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
-                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.kondisi_gh]}</td>
-                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.irigasi_tetes]}</td>
-                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.kondisi_tanaman]}</td>
-                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.hama_penyakit]}</td>
-                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.pemupukan]}</td>
-                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.pembungaan_pembuahan]}</td>
+                  
+                  {/* 4. Tambahkan fallback || row.nama_kolom agar data asli tetap muncul jika tidak ada di map */}
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.kondisi_gh] || row.kondisi_gh}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.irigasi_tetes] || row.irigasi_tetes}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.kondisi_tanaman] || row.kondisi_tanaman}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.hama_penyakit] || row.hama_penyakit}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.pemupukan] || row.pemupukan}</td>
+                  <td className="p-3 border border-gray-200 text-base">{labelMap[row.pembungaan_pembuahan] || row.pembungaan_pembuahan}</td>
                   <td className="p-3 border border-gray-200 text-base">{row.tindakan || '-'}</td>
                 </tr>
               ))

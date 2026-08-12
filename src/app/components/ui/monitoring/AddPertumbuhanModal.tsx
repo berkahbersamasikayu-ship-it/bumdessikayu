@@ -107,8 +107,9 @@ export default function AddPertumbuhanModal({
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-black mb-1.5">Kolam</label>
+            {/* Tambahan text-gray-900 di bawah ini */}
             <select value={kolamId} onChange={(e) => setKolamId(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900">
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-900">
               <option value="">Pilih Kolam</option>
               {kolamList.map((k) => <option key={k.id} value={k.id}>{k.nama_kolam}</option>)}
             </select>
@@ -121,24 +122,28 @@ export default function AddPertumbuhanModal({
 
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Tanggal</label>
+            {/* Tambahan text-gray-900 di bawah ini */}
             <input type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} max={maxDate}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Jumlah Ikan Mati</label>
+            {/* Tambahan text-gray-900 di bawah ini */}
             <input type="number" value={jumlahIkanMati} onChange={(e) => setJumlahIkanMati(e.target.value)}
               placeholder="0"
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Berat Rata-rata (gram)</label>
+            {/* Tambahan text-gray-900 di bawah ini */}
             <input type="number" value={beratRataRata} onChange={(e) => setBeratRataRata(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-1.5">Panjang Rata-rata (cm)</label>
+            {/* Tambahan text-gray-900 di bawah ini */}
             <input type="number" value={panjangRataRata} onChange={(e) => setPanjangRataRata(e.target.value)}
-              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900" />
+              className="w-full h-11 rounded-lg border border-gray-300 px-4 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-900" />
           </div>
 
           {jumlahHidupSetelahInput !== null && (
