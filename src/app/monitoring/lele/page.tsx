@@ -57,7 +57,7 @@ export default function MonitoringLelePage() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab]);
+  }, [tab, search]);
 
   useEffect(() => {
     setSearch('');

@@ -86,7 +86,7 @@ export default function MonitoringGreenhousePage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari..."
-              className="h-11 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="h-11 pl-9 pr-4 rounded-lg border border-gray-300 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-900 text-gray-900 placeholder-gray-500"
             />
           </div>
 
